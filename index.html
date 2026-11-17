@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>What's Winning — Ad Intelligence</title>
+<style>
+:root{
+  --bg:#f0f2f5; --surface:#ffffff; --surface2:#f5f6f7; --ink:#1c1e21; --muted:#606770; --faint:#8a8d91;
+  --border:#dddfe2; --blue:#1877f2; --blue-dark:#0f66d6; --blue-soft:#e7f0fe;
+  --green:#087443; --green-soft:#e6f4ec; --amber:#9a6206; --amber-soft:#fdf0d5;
+  --red:#b3261e; --red-soft:#fdecea; --shadow:0 1px 2px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.06);
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#18191a; --surface:#242526; --surface2:#2f3031; --ink:#e4e6eb; --muted:#b0b3b8; --faint:#8a8d91;
+  --border:#3e4042; --blue:#2d88ff; --blue-dark:#5aa0ff; --blue-soft:#1c2f4a;
+  --green:#4cc38a; --green-soft:#173528; --amber:#f5c04e; --amber-soft:#3a2f14;
+  --red:#ff8a80; --red-soft:#3d1f1d; --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3); }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--blue)}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+/* Sidebar */
+aside{background:var(--surface);border-right:1px solid var(--border);padding:22px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+.brandmark{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.mark{width:36px;height:36px;border-radius:9px;background:var(--blue);display:grid;place-items:center;flex:none}
+.mark svg{width:20px;height:20px}
+.brandmark b{font-size:16px;line-height:1.2;display:block}
+.brandmark span{font-size:12px;color:var(--muted);display:block}
+nav{margin-top:22px;display:flex;flex-direction:column;gap:2px}
+nav a{color:var(--ink);text-decoration:none;padding:9px 10px;border-radius:8px;font-weight:600;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+nav a:hover{background:var(--surface2)}
+nav a .n{font-weight:500;color:var(--muted);font-size:12px}
+.side-note{margin-top:24px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12.5px;color:var(--muted)}
+.side-note b{color:var(--ink)}
+.side-foot{margin-top:16px;font-size:11.5px;color:var(--faint);line-height:1.5}
+/* Main */
+main{padding:28px 28px 64px;max-width:1280px;width:100%;margin:0 auto}
+.crumb{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+h1{font-size:34px;line-height:1.12;margin:8px 0 10px;letter-spacing:-.02em}
+.lede{font-size:17px;color:var(--muted);max-width:760px;margin:0}
+.lede strong{color:var(--ink)}
+.snapshot{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.chip span{color:var(--muted);font-weight:500}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:22px}
+.panel h2{font-size:19px;margin:0 0 4px;letter-spacing:-.01em}
+.panel .sub{color:var(--muted);margin:0 0 14px;font-size:14px}
+h2.section{font-size:21px;margin:34px 0 4px;letter-spacing:-.01em}
+p.section-sub{color:var(--muted);margin:0 0 14px;max-width:820px}
+/* Lookup */
+.lookup-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end}
+label.f{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px}
+label.f span{font-weight:500;color:var(--muted)}
+input[type=text],input[type=url],input[type=date],input[type=search],input[type=number],select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 11px;font-size:14px}
+textarea{resize:vertical;min-height:64px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:var(--blue)}
+.btn{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:11px 18px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn:hover{background:var(--blue-dark)}
+.btn.secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--border)}
+.btn.secondary:hover{background:var(--blue-soft)}
+.btn.small{padding:8px 13px;font-size:13.5px}
+.note{font-size:13px;color:var(--muted);background:var(--blue-soft);border-radius:8px;padding:10px 12px;margin-top:14px}
+.note b{color:var(--ink)}
+.link-results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.link-card{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--surface2)}
+.link-card b{display:block;font-size:14px}
+.link-card p{font-size:12.5px;color:var(--muted);margin:4px 0 10px;min-height:34px}
+.link-card a{font-weight:700;font-size:13.5px;text-decoration:none}
+.link-card a:hover{text-decoration:underline}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:22px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.stat .v{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.stat .k{font-size:13px;font-weight:700;margin-top:6px}
+.stat .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+/* Rules */
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.rule{border:1px solid var(--border);border-radius:10px;padding:14px 16px;background:var(--surface)}
+.rule b{font-size:14.5px;display:flex;gap:8px;align-items:center}
+.rule p{margin:6px 0 0;color:var(--muted);font-size:13.5px}
+.dot{width:9px;height:9px;border-radius:50%;flex:none}
+.limits{margin-top:12px;border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:8px;padding:12px 14px;background:var(--amber-soft);font-size:13.5px}
+.limits b{color:var(--ink)}
+.limits ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+/* Top ads spotlight */
+.top-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.top-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.top-tab{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px;cursor:pointer}
+.top-tab[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.top-note{font-size:13px;color:var(--muted);margin:10px 0 0}
+/* Compact visual cards (Huel-playbook style) + brand header + library count record */
+.brand-head{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);padding:16px 18px;margin-top:16px}
+.bh-main{min-width:240px;flex:1}
+.bh-name{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.bh-count{font-size:13.5px;color:var(--muted);margin-top:3px}
+.bh-count b{color:var(--ink)}
+.bh-lib{margin-top:10px;font-size:14px}
+.bh-lib .lib-num{font-weight:800}
+.bh-lib .lib-none{color:var(--muted);font-size:13px}
+.count-rec{min-width:280px;flex:1;max-width:460px}
+.count-rec .cr-grid{display:grid;grid-template-columns:1fr 1.2fr 1fr auto;gap:8px;align-items:end}
+.count-rec .fine{font-size:12px;color:var(--muted);margin:8px 0 0}
+.fmt-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.fmt-tab{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px;cursor:pointer}
+.fmt-tab small{color:var(--muted);font-weight:700;margin-left:5px}
+.fmt-tab[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.fmt-tab[aria-pressed=true] small{color:#d6e7ff}
+.fmt-tab.creator{border-style:dashed}
+.fmt-note{font-size:12.5px;color:var(--muted)}
+.vgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}
+.vcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;display:flex;flex-direction:column;gap:8px;cursor:pointer;text-align:left}
+.vcard:hover{border-color:var(--blue)}
+.vcard .creative-wrap{position:relative}
+.vcard .creative .cap-label{max-width:58%}
+.vcard .creative .c-head{font-size:15px;-webkit-line-clamp:2}
+.vcard .creative .c-hook{display:none}
+.vcard .creative .c-body{padding-right:64px}
+.vcard .creative .play{width:40px;height:40px}
+.vcard .creative .play::before{border-left:12px solid #fff;border-top:8px solid transparent;border-bottom:8px solid transparent}
+.ov-col{position:absolute;top:8px;right:8px;z-index:4;display:flex;flex-direction:column;gap:5px;align-items:flex-end;pointer-events:none}
+.ov-badge{background:rgba(0,0,0,.78);color:#fff;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;line-height:1.35}
+.ov-badge.long{background:var(--amber);color:#1c1e21}
+.ov-badge.fresh{background:var(--green);color:#fff}
+.ov-badge.reach{background:#fff;color:#111}
+.vcard h3{font-size:14px;line-height:1.35;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.vcard .v-meta{font-size:12px;color:var(--muted)}
+.vcard .v-signal{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--amber)}
+.vcard .v-jump{font-size:12.5px;font-weight:700;color:var(--blue-dark);margin-top:auto}
+.lib-box{margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 14px}
+.lib-box p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.lib-grid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:12px;margin-top:12px}
+@media (max-width:1100px){ .vgrid{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:980px){ .count-rec .cr-grid,.lib-grid{grid-template-columns:1fr} }
+@media (max-width:560px){ .vgrid{grid-template-columns:1fr} }
+/* Search-started state (new brand, capture begins at the search) */
+.search-start{grid-column:1/-1;border:1.5px dashed var(--blue);border-radius:var(--radius);padding:22px;background:var(--blue-soft)}
+.search-start h3{margin:0 0 4px;font-size:18px;letter-spacing:-.01em}
+.search-start p{margin:0;color:var(--muted);font-size:14px}
+.search-start p b{color:var(--ink)}
+.search-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.search-step{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:13.5px;color:var(--muted)}
+.search-step b{display:block;color:var(--ink);margin-bottom:2px}
+.search-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search-start .fine{font-size:12.5px;margin-top:12px}
+.top-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:16px}
+.top-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px;grid-column:span 2}
+.top-card.wide{grid-column:span 3}
+.top-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rank{width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.signal{font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:var(--amber-soft);color:var(--amber);border-radius:999px;padding:4px 9px;text-align:right}
+/* Visual creative cards — mocks rebuilt from the audit's creative notes (no real image files exist in the July dataset) */
+.creative{position:relative;border-radius:10px;overflow:hidden;aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;color:#fff;background:#333;text-align:left}
+.creative .cap-label{position:absolute;top:8px;left:8px;z-index:3;background:rgba(0,0,0,.7);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:999px;max-width:calc(100% - 16px);line-height:1.35}
+.creative .cap-label.real{background:#087443}
+.creative .c-body{position:relative;z-index:2;padding-right:86px}
+.creative .c-brand{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;opacity:.88}
+.creative .c-head{font-size:18px;font-weight:800;line-height:1.25;letter-spacing:-.01em;margin-top:3px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.top-card.hero3 .creative .c-head{font-size:19px}
+.creative .c-hook{font-size:12.5px;opacity:.92;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.creative .c-cta{position:absolute;right:10px;bottom:10px;z-index:2;background:#fff;color:#111;font-weight:800;font-size:11.5px;padding:5px 10px;border-radius:999px;max-width:45%;text-align:center}
+.creative .play{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);z-index:2;width:52px;height:52px;border-radius:50%;background:rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.92);display:grid;place-items:center;pointer-events:none}
+.creative .play::before{content:'';border-left:16px solid #fff;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.creative.banner{aspect-ratio:16/7;justify-content:center}
+.creative.banner .c-head{font-size:20px;-webkit-line-clamp:2}
+.th-purple{background:linear-gradient(135deg,#2e1065,#6d28b8 55%,#0e7c86)}
+.th-aws{background:linear-gradient(135deg,#131a2a,#1f3a5f 60%,#7a3c00)}
+.th-aws .c-cta{background:#ff9900}
+.th-tiktok{background:linear-gradient(135deg,#000000,#161823 58%,#4a0e1e)}
+.th-tiktok .c-cta{background:#fe2c55;color:#fff}
+.th-dark{background:linear-gradient(135deg,#0d0d12,#26262e 60%,#3d2c18)}
+.th-warm{background:linear-gradient(135deg,#5b3a29,#8a5a3b 55%,#31404f)}
+.th-bright{background:linear-gradient(135deg,#b45309,#db2777 60%,#f59e0b)}
+.th-slate{background:linear-gradient(135deg,#334155,#1e293b)}
+.creative.textad{aspect-ratio:auto;background:var(--surface);color:var(--ink);justify-content:flex-start;padding:30px 14px 14px;border:1px solid var(--border)}
+.creative.textad .cap-label{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+.creative.textad .t-row{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--green);font-weight:600}
+.creative.textad .ad-badge{border:1px solid var(--amber);color:var(--amber);font-size:10px;font-weight:800;padding:1px 5px;border-radius:4px}
+.creative.textad .t-head{color:var(--blue-dark);font-size:16.5px;font-weight:600;line-height:1.3;margin-top:5px}
+.creative.textad .t-copy{font-size:12.5px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.creative.shot{padding:0;background:#000;justify-content:flex-start}
+.creative.shot img{width:100%;height:100%;object-fit:cover;display:block}
+.card .creative{margin-top:2px}
+.why{background:var(--green-soft);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.why b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin-bottom:2px}
+.top-meta{font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 14px}
+.top-meta b{color:var(--ink)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+@media (max-width:980px){ .top-card,.top-card.wide{grid-column:span 6} }
+/* Format pills */
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 4px;align-items:flex-start}
+.pill{border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:7px 13px;font-weight:700;font-size:13px;cursor:pointer}
+.pill small{color:var(--muted);font-weight:600;margin-left:4px}
+.pill[aria-pressed=true]{background:var(--blue);border-color:var(--blue);color:#fff}
+.pill[aria-pressed=true] small{color:#d6e7ff}
+.pill.empty{color:var(--muted);border-style:dashed}
+/* Controls */
+.controls{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px}
+.controls2{display:grid;grid-template-columns:1fr 1fr auto auto;gap:10px;margin-top:10px;align-items:end}
+.resultline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:18px 0 12px;flex-wrap:wrap}
+.resultline b{font-size:16px}
+.resultline span{color:var(--muted);font-size:13px}
+/* Cards */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--surface2);border:1px solid var(--border)}
+.badge.platform{background:var(--blue-soft);border-color:transparent;color:var(--blue-dark)}
+.badge.flag-new{background:var(--green-soft);color:var(--green);border-color:transparent}
+.badge.flag-long{background:var(--amber-soft);color:var(--amber);border-color:transparent}
+.badge.flag-strong{background:#1c1e21;color:#fff;border-color:transparent}
+@media (prefers-color-scheme: dark){.badge.flag-strong{background:#e4e6eb;color:#18191a}}
+.card h3{font-size:16.5px;line-height:1.35;margin:0}
+.field{font-size:13.5px}
+.field .lab{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:1px}
+.field p{margin:0}
+.offer-cta{display:grid;grid-template-columns:1fr auto;gap:10px;background:var(--surface2);border-radius:8px;padding:10px 12px}
+.offer-cta .cta{align-self:center;background:var(--blue);color:#fff;font-weight:700;font-size:12.5px;border-radius:999px;padding:6px 12px;text-align:center}
+details{border-top:1px solid var(--border);padding-top:8px}
+details summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--blue-dark)}
+details p{font-size:13px;color:var(--muted);margin:8px 0 2px}
+.meta-lines{font-size:12.5px;color:var(--muted);display:grid;gap:2px;border-top:1px solid var(--border);padding-top:10px}
+.meta-lines b{color:var(--ink)}
+.longevity{background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:10px 12px}
+.longevity .row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.longevity input[type=date]{max-width:190px;background:var(--surface)}
+.long-status{font-size:13px;font-weight:700}
+.long-status.not{color:var(--muted);font-weight:600}
+.card-foot{display:flex;gap:8px;margin-top:auto;flex-wrap:wrap}
+.empty{grid-column:1/-1;background:var(--surface);border:1px dashed var(--border);border-radius:var(--radius);padding:34px 22px;text-align:center;color:var(--muted)}
+.empty b{color:var(--ink);display:block;font-size:16px;margin-bottom:4px}
+/* Quick capture */
+.quick{border:1.5px solid var(--blue);border-radius:var(--radius);background:var(--blue-soft);padding:18px;margin-bottom:20px}
+.quick h3{margin:0 0 4px;font-size:17px}
+.quick .qsub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.quick .qsub b{color:var(--ink)}
+.dropzone{border:2px dashed var(--blue);border-radius:12px;background:var(--surface);padding:20px;text-align:center;cursor:pointer;transition:background .15s}
+.dropzone:hover,.dropzone.drag{background:var(--blue-soft)}
+.dropzone b{display:block;font-size:15px}
+.dropzone span{color:var(--muted);font-size:13px;display:block;margin-top:3px}
+.dropzone input{display:none}
+.q-preview{display:none;margin-top:12px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:#000;position:relative}
+.q-preview.show{display:block}
+.q-preview img{width:100%;max-height:340px;object-fit:contain;display:block;background:#111}
+.q-preview .q-filemeta{display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--surface);padding:9px 12px;font-size:13px;flex-wrap:wrap}
+.q-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:12px;margin-top:14px}
+.q-grid label.f{color:var(--ink)}
+.ocr-box{margin-top:14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:13px 14px}
+.ocr-box p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.ocr-fields{display:none;margin-top:12px;gap:12px;grid-template-columns:1fr 1fr 1fr}
+.ocr-fields.show{display:grid}
+.ocr-fields .ocr-lab{grid-column:1/-1;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--amber)}
+.q-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.q-msg{font-size:13.5px;font-weight:700;color:var(--green);min-height:20px}
+.q-msg.err{color:var(--red)}
+.full-capture{border:1px solid var(--border);border-radius:var(--radius);padding:4px 18px 18px;background:var(--surface)}
+.full-capture summary{cursor:pointer;font-weight:800;font-size:15.5px;padding:14px 0 6px;list-style-position:outside}
+.full-capture .sub{margin-top:2px}
+@media (max-width:980px){ .q-grid,.ocr-fields{grid-template-columns:1fr} }
+/* Form */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.form-grid .wide{grid-column:span 2}
+.form-msg{font-size:13.5px;font-weight:700;color:var(--green);margin-top:10px;min-height:20px}
+footer{margin-top:40px;border-top:1px solid var(--border);padding-top:16px;color:var(--muted);font-size:12.5px;max-width:900px}
+@media (max-width:980px){
+  .app{grid-template-columns:1fr}
+  aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--border)}
+  nav{flex-direction:row;flex-wrap:wrap}
+  nav a{background:var(--surface2)}
+  .side-note,.side-foot{display:none}
+  main{padding:20px 16px 56px}
+  h1{font-size:27px}
+  .lookup-grid,.link-results,.stats,.rules,.controls,.controls2,.form-grid,.search-steps{grid-template-columns:1fr}
+  .form-grid .wide{grid-column:span 1}
+  .grid{grid-template-columns:1fr}
+  .offer-cta{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brandmark">
+      <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 17l5-6 4 3 7-9" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 5h5v5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div><b>What's Winning</b><span>Ad Intelligence</span></div>
+    </div>
+    <nav aria-label="Sections">
+      <a href="#lookup">Brand lookup <span class="n">Start</span></a>
+      <a href="#top">Top ads <span class="n">Visual cards</span></a>
+      <a href="#judged">How winning is judged</a>
+      <a href="#swipe">Swipe file <span class="n">36 ads</span></a>
+      <a href="#capture">Capture — screenshot</a>
+    </nav>
+    <div class="side-note"><b>The honest shortcut:</b> the libraries don't publish spend or CTR for commercial ads. So this view reads the signal they <i>do</i> publish — how long an ad has been running, and how many variations of one angle exist.</div>
+    <p class="side-foot">Sample data: July 2026 audit of China + SEA markets, from the ad-intelligence-launcher repo (head b1f66e75). 36 real ads in the swipe file.</p>
+  </aside>
+
+  <main>
+    <p class="crumb">Competitor ad research · Swipe file</p>
+    <h1>What's winning — and how you can tell</h1>
+    <p class="lede">Competitor research isn't difficult, it's just painfully manual: open the Ad Library, search the brand, scroll, screenshot everything into a messy doc. This view turns that into a sortable swipe file — and judges “winning” by the one signal the libraries actually publish: <strong>longevity</strong>. An advertiser doesn't keep paying for a loser.</p>
+    <div class="snapshot">
+      <div class="chip">Snapshot <span>· July 2026 audit</span></div>
+      <div class="chip">36 <span>real ads in the swipe file</span></div>
+      <div class="chip">3 <span>brands with ads — Amazon, TikTok, Google</span></div>
+      <div class="chip">8 <span>markets — CN, HK, SG, PH, ID, MY, TH, VN</span></div>
+    </div>
+
+    <!-- LOOKUP -->
+    <section class="panel" id="lookup">
+      <h2>1 · Look up a brand</h2>
+      <p class="sub">Amazon, Google and TikTok are pre-loaded samples from the July 2026 audit — look one up and its top ads appear right below, and the swipe file in section 4 filters to that brand only. Enter any other brand or domain and clicking “Show top ads” does the same: the whole page follows that brand, and a fresh capture starts for it on the spot — library searches built from what you typed, and a top-ads list that fills as you add what you find. If the brand has no captured ads yet, the swipe file shows its capture-started state instead of other brands' cards. The three libraries don't search the same way, so one domain alone doesn't work identically on all three.</p>
+      <div class="lookup-grid">
+        <div><label class="f" for="brandInput">Brand / advertiser name</label><input type="text" id="brandInput" value="Amazon" autocomplete="off"></div>
+        <div><label class="f" for="domainInput">Domain <span>(optional — used for Google)</span></label><input type="text" id="domainInput" value="amazon.com" autocomplete="off"></div>
+        <button class="btn" id="genBtn" type="button">Show top ads</button>
+      </div>
+      <div class="link-results" id="linkResults"></div>
+      <p class="note"><b>How each library searches:</b> Meta searches by Page name or keyword · Google Ads Transparency searches by domain · LinkedIn searches by company name (the generator link is global — use LinkedIn's own Country filter inside the library for one market, and treat the generated link as live-unverified until it loads for you).</p>
+      <p class="note"><b>No backend is combing the libraries:</b> search filters the captured file on this page and builds the library links for you to open — it does not fetch live ads. This is a static page: the 36 July 2026 ads are baked in, and there is no server, background job, or instruction anywhere that searches Meta, Google or LinkedIn for a brand automatically. Actually combing the libraries for a brand would need a separate backend service, browser automation, or a paid ad-data service — none of that is part of this prototype, and nothing here should be read as if it were happening behind the scenes.</p>
+    </section>
+
+    <!-- TOP ADS -->
+    <section class="panel" id="top" style="border-top:4px solid var(--amber)">
+      <div class="top-head">
+        <div>
+          <h2>2 · Top ads — visual cards</h2>
+          <p class="sub" style="margin-bottom:0" id="topSub">Compact, image-forward cards — brand header with its captured count, format tabs with counts, and the creative up front with a days-running badge and published reach overlaid where a library published it. Each card is rebuilt from the audit's own creative notes (the July dataset has no real image files), so every mock is labelled as one, on the card; a screenshot you capture replaces the mock. Click any card to open its full swipe-file card below. No playbook panel — just the cards.</p>
+        </div>
+      </div>
+      <div class="top-tabs" id="topTabs" role="group" aria-label="Choose which brand's top ads to show"></div>
+      <div id="brandHead"></div>
+      <div class="fmt-tabs" id="fmtTabs" role="group" aria-label="Filter the visual cards by format"></div>
+      <p class="top-note" id="topNote"></p>
+      <div class="vgrid" id="topGrid"></div>
+      <p class="top-note">Reach is overlaid only where a library published it (in this file, the 5 TikTok HK video ads) — every other card shows no reach, never an invented one. There is no spend overlay: Meta, Google and LinkedIn publish no spend for commercial ads, and this page does not model an estimate. Library counts are manual records of the number the library page showed when you looked — always shown with their source and date, never as a live figure. Full details, creative notes and start-date fields for every captured ad are in the swipe file in section 4, which follows the brand selected here.</p>
+    </section>
+
+    <!-- STATS -->
+    <div class="stats" id="statsRow" aria-label="Swipe file summary"></div>
+
+    <!-- JUDGED -->
+    <section class="panel" id="judged">
+      <h2>3 · How winning is judged</h2>
+      <p class="sub">There is no performance feed for commercial ads, so “winning” here is a proxy — labelled as one, with the thresholds stated up front.</p>
+      <div class="rules">
+        <div class="rule"><b><span class="dot" style="background:var(--amber)"></span>Long-running = likely working</b><p>Enter the “started running” date shown in the library for each ad. <strong>30+ days</strong> flags it as a Long-runner; <strong>90+ days</strong> is the stronger signal. Until a date is entered, longevity shows as “Not recorded” — this dataset (July 2026) captured no start dates, so none are invented.</p></div>
+        <div class="rule"><b><span class="dot" style="background:var(--blue)"></span>Variations on one angle = scaling it</b><p>Several ads pushing the same product or hook means the advertiser is investing behind that angle. In this file: Amazon runs the same Amazon Quick / Q Business creative across all six SEA markets, and TikTok repeats its “Level Up Your Advertising” hook across Philippine video ads.</p></div>
+        <div class="rule"><b><span class="dot" style="background:var(--green)"></span>New this week = survived its first test</b><p>An ad whose start date falls within 7 days of your capture date gets the <strong>New this week</strong> flag. If it's still running at the next weekly capture, it passed its first test. Libraries don't send alerts — spotting launches means capturing weekly and comparing.</p></div>
+        <div class="rule"><b><span class="dot" style="background:#8a3ffc"></span>Published reach = real audience data</b><p>Where a library published reach, it's shown on the card. In this file only the 5 TikTok HK video ads carry it — the highest is “name a more emotionally scarring movie 😭” at 1M–10M unique users. Everywhere else, reach reads “Not published”.</p></div>
+      </div>
+      <div class="limits"><b>What the libraries do not publish for commercial ads</b>
+        <ul>
+          <li><b>Spend:</b> not published by Meta, Google or LinkedIn. No spend column is shown, and no “estimated spend” is invented — there is no estimation model behind this prototype.</li>
+          <li><b>CTR / conversions:</b> not published on any of the three libraries.</li>
+          <li><b>Age &amp; gender:</b> not published outside EU/UK-delivered ads. This audit covers CN/HK/SEA, so every card reads “Age/gender: not published outside EU/UK”. Country is shown — it's the ad's market.</li>
+          <li><b>No official pull:</b> Meta's Ad Library API covers political/issue and EU/UK ads only; Google has no public API for commercial ads. Capture stays manual for now — that's why Quick capture below works from a screenshot alone, with no form to fill in.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SWIPE -->
+    <h2 class="section" id="swipe">4 · The swipe file</h2>
+    <p class="section-sub">Split by format, sortable, filterable — and it follows the brand you looked up in section 1 or picked in Top ads: while a brand is active, only that brand's ads show here, the format counts and the “Showing” line count that brand only, and “Clear filter” above the cards brings back the full file. Carousel and Creator-led are shown as empty states rather than filled with invented entries — this audit captured no carousels, and no ad is explicitly flagged creator-led (the closest style, “UGC/Authentic”, doesn't appear in the data either).</p>
+    <div class="pills" id="formatPills" role="group" aria-label="Filter by format"></div>
+
+    <div class="panel" style="margin-top:10px">
+      <div class="controls">
+        <div><label class="f" for="searchInput">Search headline or hook</label><input type="search" id="searchInput" placeholder="e.g. Level Up, Prime Video, free tier…"></div>
+        <div><label class="f" for="platformSel">Platform</label><select id="platformSel"></select></div>
+        <div><label class="f" for="brandSel">Brand</label><select id="brandSel"></select></div>
+        <div><label class="f" for="marketSel">Market (country)</label><select id="marketSel"></select></div>
+        <div><label class="f" for="sortSel">Sort by</label><select id="sortSel">
+          <option value="brand">Brand A–Z</option>
+          <option value="days">Days running (longest first)</option>
+          <option value="newest">Newest first (by start date)</option>
+          <option value="format">Format</option>
+          <option value="platform">Platform</option>
+          <option value="market">Market</option>
+        </select></div>
+      </div>
+      <div class="controls2">
+        <div><label class="f" for="flagSel">Winning flag</label><select id="flagSel">
+          <option value="all">All ads</option>
+          <option value="long">Long-runners (30+ days)</option>
+          <option value="strong">Strong long-runners (90+ days)</option>
+          <option value="new">New this week</option>
+          <option value="reach">Has published reach</option>
+          <option value="undated">Start date not recorded</option>
+        </select></div>
+        <div><label class="f" for="captureDate">Capture date <span>(days-running is counted to this date)</span></label><input type="date" id="captureDate"></div>
+        <button class="btn secondary small" id="downloadBtn" type="button">Download swipe file (CSV)</button>
+        <button class="btn secondary small" id="resetBtn" type="button">Reset filters &amp; dates</button>
+      </div>
+    </div>
+
+    <div class="resultline"><b id="resultCount"></b><button type="button" class="btn secondary small" id="clearBrandBtn" style="display:none"></button><span>Tip: add a start date on any card to switch on its days-running and flags.</span></div>
+    <div class="grid" id="grid"></div>
+
+    <!-- CAPTURE -->
+    <section class="panel" id="capture">
+      <h2>5 · Capture an ad — a screenshot is enough</h2>
+      <p class="sub">Found a new ad in a library? Don't fill in a form. Screenshot it, drop the screenshot in below, confirm the brand, and save — that's a complete capture. It appears straight away in the swipe file and in that brand's Top ads, with the screenshot as its thumbnail. Add the words and dates later only if you want them, via “Add details” on its card. Entries added in the browser (screenshots included) are kept in this browser tab only and reset on reload — download the CSV above to keep the text copy (the CSV holds the text, not the image).</p>
+
+      <!-- QUICK CAPTURE — primary path: screenshot + brand only -->
+      <div class="quick" id="quickCapture">
+        <h3>Quick capture — screenshot only</h3>
+        <p class="qsub">You need just <b>two things: a screenshot and a brand</b>. Everything else below is optional. Captured date defaults to today; started-running stays blank until you add it.</p>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add a screenshot: click to choose a file, drag and drop, or paste">
+          <b>Drop the ad screenshot here</b>
+          <span>…or click to choose a file, or paste it straight in with Ctrl+V / Cmd+V from the ad library</span>
+          <input type="file" id="qShot" accept="image/*">
+        </div>
+        <div class="q-preview" id="qPreview">
+          <img id="qPreviewImg" alt="Preview of the screenshot you are about to save">
+          <div class="q-filemeta"><span id="qFileMeta"></span><button type="button" class="btn secondary small" id="qRemove">Remove screenshot</button></div>
+        </div>
+        <div class="q-grid">
+          <div><label class="f" for="qBrand">Brand *</label><input type="text" id="qBrand" placeholder="e.g. Banyan Tree"></div>
+          <div><label class="f" for="qPlatform">Platform <span>(optional)</span></label><select id="qPlatform"><option value="">Not sure / leave blank</option><option>Meta</option><option>Google</option><option>LinkedIn</option><option>TikTok</option><option>Pinterest</option></select></div>
+          <div><label class="f" for="qMarket">Market <span>(optional)</span></label><input type="text" id="qMarket" placeholder="e.g. SG" maxlength="4"></div>
+          <div><label class="f" for="qStart">Started running <span>(optional)</span></label><input type="date" id="qStart"></div>
+        </div>
+        <div class="lib-box">
+          <b>Active ads in library (optional)</b>
+          <p>If the library page you just screenshotted showed a total — the “about 1,330 ads” style number at the top of the results — record it here exactly as shown. It attaches to this brand's header in Top ads with the library and the date you saw it, e.g. “1,330 active (as seen in Meta Ad Library, 7 Nov 2026)”. It's a manual note of what the page showed, not a live feed — this page can't fetch counts itself, and the number is never auto-updated or estimated.</p>
+          <div class="lib-grid">
+            <div><label class="f" for="qLibCount">Active ads shown</label><input type="number" id="qLibCount" min="0" step="1" placeholder="e.g. 1330"></div>
+            <div><label class="f" for="qLibSource">Library you saw it in</label><select id="qLibSource"><option>Meta Ad Library</option><option>Google Ads Transparency</option><option>LinkedIn Ad Library</option><option>TikTok Ad Library</option></select></div>
+            <div><label class="f" for="qLibDate">Date seen</label><input type="date" id="qLibDate"></div>
+          </div>
+        </div>
+        <div class="ocr-box">
+          <button type="button" class="btn secondary small" id="ocrBtn">Read text from screenshot (optional)</button>
+          <p id="ocrStatus">Best-effort helper: reads the words in your screenshot right here in the browser — nothing leaves this tab — and suggests a headline, hook and CTA for you to check and edit before saving. It's often wrong on stylised creative, so never treat it as the ad's real copy until you've checked it. If text reading can't load, the screenshot-only save below still works.</p>
+          <div class="ocr-fields" id="ocrFields">
+            <span class="ocr-lab">Suggested by OCR — check before saving</span>
+            <div><label class="f" for="qHeadline">Suggested headline</label><input type="text" id="qHeadline"></div>
+            <div><label class="f" for="qHook">Suggested hook</label><input type="text" id="qHook"></div>
+            <div><label class="f" for="qCta">Suggested CTA</label><input type="text" id="qCta"></div>
+          </div>
+        </div>
+        <div class="q-actions">
+          <button type="button" class="btn" id="qSave">Save to swipe file</button>
+          <span class="q-msg" id="qMsg" role="status"></span>
+        </div>
+      </div>
+
+      <details class="full-capture" id="fullCapture">
+        <summary>Full capture — add details now (optional, not the normal path)</summary>
+        <p class="sub">The long form, for when you want every field filled in at capture time — or when “Add details” on a screenshot-only card sends you here to complete that entry. Saving an entry you opened with “Add details” updates that entry instead of adding a duplicate.</p>
+      <form id="captureForm">
+        <div class="form-grid">
+          <div><label class="f" for="fBrand">Brand *</label><input type="text" id="fBrand" required placeholder="e.g. Shopee"></div>
+          <div><label class="f" for="fPlatform">Platform *</label><select id="fPlatform" required><option value="">Choose…</option><option>Meta</option><option>Google</option><option>LinkedIn</option><option>TikTok</option><option>Pinterest</option></select></div>
+          <div><label class="f" for="fMarket">Market (country code) *</label><input type="text" id="fMarket" required placeholder="e.g. SG" maxlength="4"></div>
+          <div><label class="f" for="fFormat">Format *</label><select id="fFormat" required><option value="">Choose…</option><option>Video</option><option>Image</option><option>Carousel</option><option>Display</option><option>Search</option><option>Search (SEM)</option><option>Sponsored Content</option><option>Sponsored InMail</option></select></div>
+          <div><label class="f" for="fStart">Started running (from the library)</label><input type="date" id="fStart"></div>
+          <div><label class="f" for="fCta">CTA</label><input type="text" id="fCta" placeholder="e.g. Learn More"></div>
+          <div class="wide"><label class="f" for="fHeadline">Headline *</label><input type="text" id="fHeadline" required></div>
+          <div><label class="f" for="fCreator">Creator / partnership ad?</label><select id="fCreator"><option value="no">No — brand ad</option><option value="yes">Yes — creator-led</option></select></div>
+          <div class="wide"><label class="f" for="fHook">Hook</label><input type="text" id="fHook" placeholder="The first line / first 3 seconds"></div>
+          <div><label class="f" for="fOffer">Offer</label><input type="text" id="fOffer"></div>
+          <div class="wide"><label class="f" for="fUrl">Ad library URL</label><input type="url" id="fUrl" placeholder="https://…"></div>
+          <div><label class="f" for="fReach">Reach <span>(only if the library published it)</span></label><input type="text" id="fReach" placeholder="Leave blank if not published"></div>
+          <div class="wide"><label class="f" for="fNotes">Creative notes</label><textarea id="fNotes" placeholder="What the creative does — opening shot, overlay text, colours, ending…"></textarea></div>
+          <div><label class="f" for="fShot">Ad screenshot <span>(optional — becomes its thumbnail)</span></label><input type="file" id="fShot" accept="image/*" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:13.5px"></div>
+        </div>
+        <p style="margin:14px 0 0"><button class="btn" type="submit" id="fullSubmitBtn">Add to swipe file</button> <button class="btn secondary" type="button" id="cancelEditBtn" style="display:none">Cancel editing</button></p>
+        <p class="form-msg" id="formMsg" role="status"></p>
+      </form>
+      </details>
+    </section>
+
+    <footer>
+      <p><b>Sources &amp; provenance.</b> All 36 swipe-file ads are taken verbatim from the July 2026 audit in the ad-intelligence-launcher repo (head b1f66e75, Nov 7 2026) — <i>client/src/data/auditData.ts</i> (China) and <i>client/src/data/seaAuditData.ts</i> (SEA). Each card's library link opens that platform's real ad library. Platform limits (no commercial spend/CTR, EU/UK-only demographics, no commercial API) were checked Nov 7, 2026 against Meta, Google and LinkedIn library documentation and are stated on the cards rather than filled in.</p>
+      <p>Next step beyond this prototype: a weekly capture routine (same brands, same markets) is what makes “new this week” and “still running” automatic instead of hand-dated.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+var ADS = [{"id": "amz-meta-hk-1", "brand": "Amazon", "platform": "Meta", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "Amazon Quick — AI Marketing Assistant", "hook": "AWS product demo opens with a split-screen showing manual marketing workflow vs. AI-automated workflow — 3 seconds of contrast.", "offer": "Free AWS trial / product demo", "cta": "Learn More", "copy": "Save your marketing team hours. Amazon Quick automates campaign creation, audience targeting, and performance reporting.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=HK&q=Amazon&search_type=keyword_unordered", "creativeNotes": "Split-screen opens with cluttered manual workflow (left) vs clean AI-automated dashboard (right). Text overlay: 'Save 10 hours/week'. Blue AWS color palette. No voiceover — text-driven. Ends on CTA button 'Try Amazon Quick Free'. High-Production corporate style."}, {"id": "amz-meta-hk-2", "brand": "Amazon", "platform": "Meta", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "New on Prime Video", "hook": "Prime Video drama clip — female lead in tense confrontation scene, subtitle cut at peak tension.", "offer": "Amazon Prime Video subscription", "cta": "Watch Now", "copy": "Don't miss the most talked-about drama of the season. Stream now on Prime Video.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=HK&q=Amazon&search_type=keyword_unordered", "creativeNotes": "Close-up of female lead in tense confrontation scene. Subtitle text cuts off mid-sentence at peak drama. No branding until final 2 seconds. Dark cinematic color grade. Prime Video logo appears bottom-right at end. Classic cliffhanger format — no product pitch until after the hook."}, {"id": "amz-google-cn-1", "brand": "Amazon", "platform": "Google", "market": "CN", "format": "Search (SEM)", "engagementStyle": "Graphic/Text-Led", "headline": "AWS Cloud Computing — Free Tier Available", "hook": "Sponsored text ad appears above organic results for 'cloud computing China'", "offer": "AWS Free Tier — 12 months free", "cta": "Start Free", "copy": "Scale your business with AWS. 200+ cloud services. Start with 12 months free.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=CN&domain=amazon.com", "creativeNotes": "Google Search SEM ad. Headline 1: 'AWS Cloud Computing — Free Tier Available'. Headline 2: 'Scale Your Business Today'. Description: '200+ cloud services. Start with 12 months free.' Sitelinks: 'AWS Free Tier', 'Cloud Migration', 'AWS Pricing', 'Contact Sales'. Verified advertiser badge shown. Appears for 'cloud computing China' and 'AWS China' keywords."}, {"id": "amz-google-cn-2", "brand": "Amazon", "platform": "Google", "market": "CN", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "Migrate to AWS — Accelerate Your Digital Transformation", "hook": "Banner ad with AWS logo and 'Migrate to Cloud' headline on tech news sites", "offer": "AWS Migration Acceleration Program", "cta": "Learn More", "copy": "Join 1M+ businesses running on AWS. Migration support available.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=CN&domain=amazon.com", "creativeNotes": "Leaderboard banner (728x90). AWS logo top-left. Bold headline: 'Migrate to AWS'. Subtext: 'Join 1M+ businesses'. Orange CTA button 'Learn More'. Deep blue background. Appears on tech news and developer sites in CN region. Clean, corporate design — no localization for CN market."}, {"id": "amz-tiktok-uk-1", "brand": "Amazon", "platform": "TikTok", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "she accidentally gave him a $5000 tip?! 😳", "hook": "Close-up of shocked man's face. Text overlay: 'she accidentally gave him a $5000 tip?!' — peak tension in first 2 seconds.", "offer": "Amazon Prime Video — drama series", "cta": "Watch on Prime Video", "copy": "You won't believe what happens next. Stream on Prime Video.", "reach": "10K–100K unique users", "libraryUrl": "https://library.tiktok.com/ads?region=GB&adv_name=Amazon&query_type=1", "creativeNotes": "9:16 vertical video. Opens on man's shocked expression in restaurant. Text overlay in bold white font: 'she accidentally gave him a $5000 tip?!'. Cut to reaction shot. No voiceover — relies entirely on facial expression + text overlay. Prime Video logo appears at 3s. Cliffhanger cut before resolution. UGC-style pacing despite being High-Production."}, {"id": "amz-tiktok-uk-2", "brand": "Amazon", "platform": "TikTok", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "name a more emotionally scarring movie 😭", "hook": "Woman in casual setting speaks to camera: 'name a more emotionally scarring movie 😭' — text overlay invites engagement.", "offer": "Amazon Prime Video — film library", "cta": "Watch Now", "copy": "She drowned in a creek this morning. Stream on Prime Video.", "reach": "1M–10M unique users", "libraryUrl": "https://library.tiktok.com/ads?region=GB&adv_name=Amazon&query_type=1", "creativeNotes": "9:16 vertical video. Woman in casual home setting speaks directly to camera in UGC-style. Text overlay: 'name a more emotionally scarring movie 😭'. Cut to dramatic film clip. Subtitle: 'She drowned in a creek this morning.' Designed to trigger comments and shares. Highest reach in the audit: 1M–10M unique users. Prime Video logo bottom-right."}, {"id": "amz-tiktok-uk-3", "brand": "Amazon", "platform": "TikTok", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "a clash in the Spurs changing room... 🤫", "hook": "Young man in blue sports jersey — tense confrontation scene. Text: 'I thought you...' cut off.", "offer": "Amazon Prime Video — sports drama", "cta": "Watch Now", "copy": "What should we do? What do you want me to do? Stream live sports on Prime Video.", "reach": "100K–200K unique users", "libraryUrl": "https://library.tiktok.com/ads?region=GB&adv_name=Amazon&query_type=1", "creativeNotes": "9:16 vertical video. Locker room confrontation between two players in Spurs jerseys. Tense dialogue: 'What should we do?' Dark, gritty color grade. TNT Sports branding. Text overlay: 'a clash in the Spurs changing room... 🤫'. Cuts before resolution — classic cliffhanger format. Sports fan targeting."}, {"id": "amz-tiktok-uk-4", "brand": "Amazon", "platform": "TikTok", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "You won't believe what happens next 🦁", "hook": "Animated cartoon lion with wide surprised eyes — bright, saturated colors. Immediate visual hook.", "offer": "Amazon Prime Video — animated family film", "cta": "Watch Now", "copy": "Stream the whole family's new favourite on Prime Video.", "reach": "200K–300K unique users", "libraryUrl": "https://library.tiktok.com/ads?region=GB&adv_name=Amazon&query_type=1", "creativeNotes": "9:16 vertical animated clip. Cartoon lion with wide surprised eyes and open mouth. Bright, saturated colors — Madagascar-style animation. Text overlay: 'You won't believe what happens next 🦁'. Family-friendly tone. Prime Video logo bottom-right. Short 6-second format. Targets parents and family audiences."}, {"id": "amz-tiktok-uk-5", "brand": "Amazon", "platform": "TikTok", "market": "HK", "format": "Video", "engagementStyle": "High-Production", "headline": "me coming home after 😏", "hook": "Young woman in pink jacket looks directly at camera with a knowing smile. Text: 'me coming home after...'", "offer": "Amazon Prime Video — comedy series", "cta": "Watch Now", "copy": "Stream on Prime Video.", "reach": "700K–800K unique users", "libraryUrl": "https://library.tiktok.com/ads?region=GB&adv_name=Amazon&query_type=1", "creativeNotes": "9:16 vertical video. Young woman in pink jacket looks directly at camera with a knowing smile. Text overlay: 'me coming home after 😏'. Cut to comedy scene. Relatable, meme-style format. No explicit product pitch until Prime Video logo at end. 700K–800K reach — strong performer. UGC-style despite being scripted."}, {"id": "amz-linkedin-1", "brand": "Amazon", "platform": "LinkedIn", "market": "CN", "format": "Video", "engagementStyle": "High-Production", "headline": "Amazon invests in free skills training programs for employees to level up into higher paying roles.", "hook": "Warehouse conveyor belt footage with overlay text: 'Skills Training at Amazon'", "offer": "Free skills training for Amazon employees", "cta": "Amazon invests in free skills training.", "copy": "Amazon offers hourly workers free technical skills training to advance their careers.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1586&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn video ad. B-roll of Amazon fulfillment center conveyor belts. Text overlay: 'Skills Training at Amazon'. Upbeat background music. Employee testimonial voiceover. Amazon orange color palette. Ends on 'Upskill with Amazon' CTA. Employer brand positioning — not product/service advertising. Targets potential employees, not customers."}, {"id": "amz-linkedin-2", "brand": "Amazon", "platform": "LinkedIn", "market": "CN", "format": "Sponsored InMail", "engagementStyle": "Sponsored InMail", "headline": "Hallo %FIRSTNAME%, Ich bin Andreas Vogel, Commercial Enterprise Director bei Amazon Freight...", "hook": "Personalized InMail from Andreas Vogel, Commercial Enterprise Director — direct executive outreach.", "offer": "Amazon Freight Webinar — 8 July 2026: Your Most Asked Questions, Answered Live", "cta": "Register Now", "copy": "LTL/FTL network UK+EU, AI in logistics operations. 8 Juli 2026, 10:00 GMT+1. Plätze sind begrenzt.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1586&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn Sponsored InMail. Sender: Andreas Vogel, Commercial Enterprise Director, Amazon Freight. Subject: Webinar invite. Body: Personalized with %FIRSTNAME% token. German-language copy targeting EU logistics decision-makers. Event: 8 July 2026, 10:00 GMT+1. CTA: 'Jetzt Registrieren'. No visual creative — pure text executive outreach. High-intent B2B format."}, {"id": "goog-linkedin-1", "brand": "Google", "platform": "LinkedIn", "market": "CN", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "CropMind is using Google AI, to give farmers accurate insights on crop health, helping them protect their harvests.", "hook": "'A new era of Innovation' header with CropMind + Google co-branded image of farmer using tablet in field.", "offer": "Google AI for agriculture — CropMind case study", "cta": "Calgary's CropMind is helping farmers increase yields with Google AI", "copy": "A new era of Innovation. CropMind + Google AI.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1441&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn display ad. Header: 'A new era of Innovation'. Image: Farmer using tablet in green field. Co-branded logos: CropMind (left) + Google (right). Headline: 'CropMind is helping farmers increase yields with Google AI'. Clean white card design. 'Promoted by Google' label top-left. No product demo — pure proof-by-association storytelling."}, {"id": "goog-linkedin-2", "brand": "Google", "platform": "LinkedIn", "market": "CN", "format": "Video", "engagementStyle": "High-Production", "headline": "AccessNow's Founder, Maayan Ziv, is building a bold new chapter of inclusion with Google AI.", "hook": "AccessNow founder Maayan Ziv speaks directly to camera about mapping accessible spaces in Canada.", "offer": "Google AI for social impact — AccessNow case study", "cta": "AccessNow is mapping Alberta's accessible spaces with Google AI", "copy": "Promoted by Google. At AccessNow we are on a mission to map the world's accessible spaces.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1441&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn video ad. Maayan Ziv (AccessNow founder) speaks directly to camera. Warm, natural indoor lighting. Subtitle: 'We are on a mission to map the world's accessible spaces.' Google logo watermark bottom-right. 'Promoted by Google' label top-left. No product demo — pure human story. Founder-as-spokesperson format. Runs at scale: part of 4,941 active Google LinkedIn ads."}, {"id": "goog-linkedin-3", "brand": "Google", "platform": "LinkedIn", "market": "CN", "format": "Video", "engagementStyle": "High-Production", "headline": "Destination Canada is using Google AI to power their data platform.", "hook": "Destination Canada tourism data platform — real-time insights dashboard shown on screen.", "offer": "Google AI for tourism — Destination Canada case study", "cta": "Destination Canada is growing Alberta tourism with Google AI", "copy": "A new era of Innovation. Real-time insights that help attract more visitors and create economic growth.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1441&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn video ad. Opens on real-time data dashboard screen. Aerial drone footage of Canadian mountains. Destination Canada + Google co-branded. Text overlay: 'Real-time insights that help attract more visitors'. Clean, corporate production quality. 'Promoted by Google' label. Same template as other Google LinkedIn ads — consistent 'A new era of Innovation' series."}, {"id": "ttk-google-cn-1", "brand": "TikTok", "platform": "Google", "market": "CN", "format": "Search (SEM)", "engagementStyle": "Graphic/Text-Led", "headline": "TikTok For Business — Manage Ads And Creators", "hook": "Sponsored SEM ad appears for 'TikTok For Business' and 'cross border marketing' searches in CN region.", "offer": "TikTok For Business — advertiser acquisition", "cta": "Start Advertising", "copy": "Reach global audiences. Maximize ROI with TikTok's AI-powered ad platform. Start your campaign today.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=CN&domain=tiktok.com", "creativeNotes": "Google Search SEM ad. Headline 1: 'TikTok For Business'. Headline 2: 'Manage Ads And Creators'. Description: 'Reach global audiences. Maximize ROI with TikTok's AI-powered ad platform.' Sitelinks: 'TikTok Ads Manager', 'Creator Marketplace', 'Business Center'. Appears for 'cross border marketing' and 'social media advertising' keywords in CN. Bold move: advertising on a competitor's platform in a market where TikTok itself is blocked."}, {"id": "ttk-google-cn-2", "brand": "TikTok", "platform": "Google", "market": "CN", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "TikTok For Business — เข้าถึงผู้ใช้ทั่วโลก", "hook": "TikTok For Business display banner in Thai language targeting cross-border e-commerce advertisers.", "offer": "TikTok For Business — Thai market advertiser acquisition", "cta": "เริ่มต้นโฆษณา (Start Advertising)", "copy": "Localized Thai-language display ad targeting CN-adjacent cross-border advertisers. Reach global TikTok audiences.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=CN&domain=tiktok.com", "creativeNotes": "Display banner in Thai language. TikTok For Business logo top-left. Black background with TikTok brand colors (black/white/teal). Thai headline: 'เข้าถึงผู้ใช้ทั่วโลก' (Reach global users). CTA button: 'เริ่มต้นโฆษณา' (Start Advertising). Targets cross-border e-commerce advertisers in CN-adjacent SEA markets. Localization signal: TikTok is investing in market-specific creative for advertiser acquisition."}, {"id": "amz-meta-sg-1", "brand": "Amazon", "platform": "Meta", "market": "SG", "format": "Video", "engagementStyle": "High-Production", "headline": "A 60-second sign-up saves your marketing team hours", "hook": "Bold productivity promise — '60 seconds' as the cost of transformation", "offer": "Amazon Q Business — AI assistant for marketing teams", "cta": "Get Started in 60 Seconds", "copy": "Behind every campaign that converts are hours of research, strategy, and asset creation before anything goes live. Amazon Quick, your AI assistant for work, connects with your CRM, internal documents and emails.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?id=1012021158473413", "creativeNotes": "Purple/teal gradient brand palette. Clean B2B SaaS aesthetic — white text on deep purple. No human faces. Focuses on the time-cost of marketing work as the pain point. Identical creative running across all 6 SEA markets — global template with zero localization."}, {"id": "amz-meta-sg-2", "brand": "Amazon", "platform": "Meta", "market": "SG", "format": "Video", "engagementStyle": "High-Production", "headline": "Your AI bottleneck isn't code generation. It's everything that comes after.", "hook": "Reframes the AI narrative — the problem isn't writing code, it's the workflow after", "offer": "Amazon Q Developer — AI coding assistant", "cta": "Learn More", "copy": "In this episode of the AWS Podcast, Honeycomb's CTO explains measuring what actually matters in the age of AI.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?id=1037446495523909", "creativeNotes": "Thought leadership format — podcast episode as the ad unit. No product demo. Uses a third-party CTO (Honeycomb) as the voice of authority. Dark background, AWS orange accent. Targets technical decision-makers, not end users."}, {"id": "amz-meta-sg-3", "brand": "Amazon", "platform": "Meta", "market": "SG", "format": "Video", "engagementStyle": "High-Production", "headline": "It's 2026. There's no reason finance teams should still be manually compiling month-end close reports.", "hook": "Year-anchored urgency — 'It's 2026' signals that manual work is now inexcusable", "offer": "Amazon Q Business — automates finance reconciliation up to 80% faster", "cta": "Learn More", "copy": "Amazon Quick, your AI assistant for work, helps finance teams close the books up to 80% faster by automating reconciliation across your ERPs and billing systems.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?id=997678156207509", "creativeNotes": "Finance-vertical targeting. Purple gradient with animated data visualization. '80% faster' stat is the hero number. No human talent — pure product/data visual. Same creative confirmed running in CN/HK/TW audit — global template, zero SEA localization."}, {"id": "amz-meta-ph-1", "brand": "Amazon", "platform": "Meta", "market": "PH", "format": "Video", "engagementStyle": "High-Production", "headline": "For the Amazon Books team, coordination across 15 teams and 19 worldwide print sites", "hook": "Scale as proof — '15 teams, 19 worldwide print sites' signals enterprise credibility", "offer": "Amazon Q Business — enterprise coordination AI", "cta": "Learn More", "copy": "Amazon Quick, the AI assistant for work, consolidates project context, processes, and institutional knowledge so team members can contribute up to 2 weeks sooner.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=PH&q=Amazon+Web+Services&search_type=keyword_unordered", "creativeNotes": "Customer story format — uses Amazon's own internal team as the case study. Purple/teal palette. Animated infographic showing team nodes connecting. No Filipino cultural cues — pure global B2B template. Running identically in SG, MY, ID, TH, VN."}, {"id": "amz-meta-id-1", "brand": "Amazon", "platform": "Meta", "market": "ID", "format": "Video", "engagementStyle": "High-Production", "headline": "Your operations team is toggling between three project trackers, two Slack channels, and an email thread", "hook": "Pain-point enumeration — lists the exact tools causing friction before offering the fix", "offer": "Amazon Q Business — unified AI workspace", "cta": "Learn More", "copy": "What happens when the operations team stops digging and starts asking? Amazon Quick connects your tools, documents, and data into one intelligent assistant.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=ID&q=Amazon+Web+Services&search_type=keyword_unordered", "creativeNotes": "Operations-vertical targeting. Animated UI mockup showing fragmented tools converging into one interface. English-only creative running in ID. Targets English-speaking enterprise decision-makers in Indonesia, not mass market."}, {"id": "amz-google-id-1", "brand": "Amazon", "platform": "Google", "market": "ID", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "Shop Clothing, Shoes & Jewelry", "hook": "Category-broad product discovery — targets interest signals", "offer": "Amazon.com international shipping to Indonesia", "cta": "Shop", "copy": "Amazon.com Official Site — We Ship Worldwide. Browse & discover millions of products.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=ID&domain=amazon.com", "creativeNotes": "Consumer e-commerce Display ad — completely different strategy from Meta B2B AI ads. Amazon runs two parallel strategies in SEA: B2B AI (Amazon Q) on Meta, consumer e-commerce (international shipping) on Google. No product-specific creative — generic category banners."}, {"id": "amz-google-id-2", "brand": "Amazon", "platform": "Google", "market": "ID", "format": "Search", "engagementStyle": "Graphic/Text-Led", "headline": "Amazon® Official Site — Amazon Ships Internationally", "hook": "Brand + international shipping as the primary value proposition for SEA markets", "offer": "Huge selection of books at low prices, worldwide shipping", "cta": "Shop", "copy": "Shop a Huge Selection of Books at Low Prices. Download the Amazon App.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=ID&domain=amazon.com", "creativeNotes": "SEM Search ad — text-only, blue headline, green domain. 'Ships Internationally' is the key differentiator for SEA where Amazon doesn't have local fulfillment. Books category lead suggests testing lower-friction purchase categories first in emerging markets."}, {"id": "amz-google-th-1", "brand": "Amazon", "platform": "Google", "market": "TH", "format": "Search", "engagementStyle": "Graphic/Text-Led", "headline": "Data Analytics Certification — AWS Certified Data Analytics", "hook": "Certification as career advancement — targets Thai professionals seeking upskilling", "offer": "Free training and sample questions for AWS certification", "cta": "Access Free Trainings", "copy": "Access Free Trainings & Sample Questions that Help You Prepare for the Certification Exam.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=TH&domain=amazon.com", "creativeNotes": "AWS certification SEM — targets Thai developers and data professionals. Free training as the hook reduces purchase friction. Dual strategy confirmed: consumer e-commerce Display + B2B cloud SEM running simultaneously in TH."}, {"id": "amz-google-vn-1", "brand": "Amazon", "platform": "Google", "market": "VN", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "Amazon.com Official Site — Browse & Discover Millions of Products", "hook": "Scale + discovery — 'millions of products' as the primary value proposition", "offer": "Amazon international shipping to Vietnam", "cta": "Browse & Discover", "copy": "Browse & discover millions of products. Read customer reviews and find best sellers. Yes, we ship to you.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=VN&domain=amazon.com", "creativeNotes": "'Yes, we ship to you' is a direct response to VN consumers' uncertainty about international delivery. Amazon is running 5 active Display ads in VN — all consumer e-commerce, none B2B. Confirms the dual-track strategy: B2B AI on Meta, consumer e-commerce on Google."}, {"id": "amz-linkedin-1", "brand": "Amazon", "platform": "LinkedIn", "market": "SG", "format": "Sponsored Content", "engagementStyle": "High-Production", "headline": "Amazon invests in free skills training programs for employees to level up into higher paying roles", "hook": "Employee value proposition — positions Amazon as a career growth platform", "offer": "Free skills training for hourly workers", "cta": "View Details", "copy": "Amazon employees can develop skills that pay the bills with free skills training.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1586&dateRange=LAST_30_DAYS", "creativeNotes": "LinkedIn employer branding campaign — 12 active ads globally. All focused on employee benefits (skills training, healthcare, career growth). No product ads on LinkedIn. Amazon uses LinkedIn exclusively for talent acquisition and employer brand, not B2B sales. Global creative, no SEA localization."}, {"id": "amz-linkedin-2", "brand": "Amazon", "platform": "LinkedIn", "market": "SG", "format": "Sponsored Content", "engagementStyle": "High-Production", "headline": "Amazon offers hourly workers and their families health care on day one", "hook": "Day-one benefits — removes the waiting period anxiety for potential hires", "offer": "Healthcare from day one for Amazon employees", "cta": "View Details", "copy": "Amazon employees can focus on living, not worrying, with health care benefits starting on day one.", "reach": null, "libraryUrl": "https://www.linkedin.com/ad-library/search?companyIds=1586&dateRange=LAST_30_DAYS", "creativeNotes": "Part of Amazon's 12-ad global LinkedIn employer brand campaign. Consistent pattern: Amazon uses LinkedIn exclusively for talent, not revenue. No B2B product or service ads visible on LinkedIn."}, {"id": "ttk-meta-ph-1", "brand": "TikTok", "platform": "Meta", "market": "PH", "format": "Video", "engagementStyle": "High-Production", "headline": "Level Up Your Advertising — Reach New Audiences & Drive Results", "hook": "Gaming language ('Level Up') to appeal to PH's young, digitally-native SMB audience", "offer": "TikTok For Business — advertising platform sign-up", "cta": "Sign Up", "copy": "Reach new audiences and drive results with TikTok For Business. Start advertising today.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=PH&q=TikTok+For+Business&search_type=keyword_unordered", "creativeNotes": "TikTok is actively running B2B acquisition ads on Meta in PH — directly competing for Facebook Ads' advertiser base. 5 active ads, all video. 'Level Up' hook repeated across 3 of 5 ads — possible creative fatigue risk. English-only targeting."}, {"id": "ttk-meta-ph-2", "brand": "TikTok", "platform": "Meta", "market": "PH", "format": "Video", "engagementStyle": "High-Production", "headline": "Grow Your Business on TikTok — Start Advertising Today", "hook": "Direct business growth promise with low-friction entry ('Start today')", "offer": "TikTok For Business platform", "cta": "Sign Up", "copy": "Millions of businesses are already growing on TikTok. Join them today.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=PH&q=TikTok+For+Business&search_type=keyword_unordered", "creativeNotes": "Social proof variant — 'Millions of businesses' as the credibility signal. Bright TikTok brand colors (black/white/red). Short-form video format mimicking TikTok's own content style — meta-creative strategy where the ad format IS the product demo."}, {"id": "ttk-meta-id-1", "brand": "TikTok", "platform": "Meta", "market": "ID", "format": "Video", "engagementStyle": "Graphic/Text-Led", "headline": "Raih pelanggan baru & tingkatkan penjualan dengan Iklan TikTok!", "hook": "Localized Indonesian copy — 'Reach new customers & increase sales with TikTok Ads!'", "offer": "TikTok For Business — SMB advertising", "cta": "Sign Up", "copy": "Alat dalam aplikasi kami membuat iklan efektif & terjangkau. Jangan tunda! (Our in-app tools make ads effective & affordable. Don't delay!)", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=ID&q=TikTok+For+Business&search_type=keyword_unordered", "creativeNotes": "KEY FINDING: TikTok is the ONLY competitor running localized-language ads in SEA. Full Bahasa Indonesia copy — 'Jangan tunda!' (Don't delay!) adds urgency. Direct attack on Facebook Ads' SMB advertiser base in Indonesia, the largest SEA market. Facebook Ads has zero counter-presence."}, {"id": "ttk-meta-id-2", "brand": "TikTok", "platform": "Meta", "market": "ID", "format": "Video", "engagementStyle": "High-Production", "headline": "Level Up Your Advertising with TikTok for Business. Reach New Audiences & Drive Results", "hook": "English variant running alongside Bahasa — dual-language strategy in ID", "offer": "TikTok For Business platform", "cta": "Sign Up", "copy": "Reach new audiences and drive results with TikTok For Business.", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=ID&q=TikTok+For+Business&search_type=keyword_unordered", "creativeNotes": "English-language variant running alongside Bahasa Indonesia ads in ID. TikTok is A/B testing language in ID — targeting both English-speaking enterprise and Bahasa-speaking SMB segments simultaneously."}, {"id": "ttk-meta-vn-1", "brand": "TikTok", "platform": "Meta", "market": "VN", "format": "Image", "engagementStyle": "Graphic/Text-Led", "headline": "Thu hút sự chú ý mà doanh nghiệp nhỏ của bạn xứng đáng nhận được trên TikTok", "hook": "Localized Vietnamese — 'Attract the attention your small business deserves on TikTok'", "offer": "TikTok For Business — SMB advertising platform", "cta": "Sign Up", "copy": "Quảng cáo trên TikTok giúp doanh nghiệp nhỏ tiếp cận khách hàng mới. (Advertising on TikTok helps small businesses reach new customers.)", "reach": null, "libraryUrl": "https://www.facebook.com/ads/library/?country=VN&q=TikTok+For+Business&search_type=keyword_unordered", "creativeNotes": "Vietnamese-language localization confirmed — TikTok running native-language B2B acquisition ads in VN. 4 active ads. Targets small business owners. Bright, colorful image format with TikTok logo prominent. Facebook Ads is absent in VN — TikTok is winning the SMB advertiser acquisition battle unchallenged."}, {"id": "ttk-google-sg-1", "brand": "TikTok", "platform": "Google", "market": "SG", "format": "Search", "engagementStyle": "Graphic/Text-Led", "headline": "Generate Leads Effortlessly", "hook": "Outcome-first SEM — leads with the result, not the product", "offer": "TikTok For Business — lead generation advertising", "cta": "Start Now", "copy": "Tap into TikTok's engaged audience and convert leads effectively. Start now!", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=SG&domain=tiktok.com", "creativeNotes": "800+ active Google SEM ads for TikTok in SG — massive keyword investment. 'Generate Leads Effortlessly' positions TikTok as a performance platform, not just awareness. Free ad credits offer reduces barrier to trial. Facebook Ads is absent from this SEM battleground."}, {"id": "ttk-google-sg-2", "brand": "TikTok", "platform": "Google", "market": "SG", "format": "Search", "engagementStyle": "Graphic/Text-Led", "headline": "Free Ad Credits on TikTok", "hook": "Free trial incentive — lowers the cost of switching from Facebook Ads", "offer": "Free ad credits for first-time TikTok advertisers", "cta": "Start Now", "copy": "Receive ad credits when you run your first ad on TikTok today. Terms apply.", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=SG&domain=tiktok.com", "creativeNotes": "Free credits as a conversion lever — directly targets advertisers evaluating platforms. Classic competitive conquest: intercept Facebook Ads' potential customers at the moment of Google search intent. Facebook Ads has no equivalent offer visible in SEM."}, {"id": "ttk-google-my-1", "brand": "TikTok", "platform": "Google", "market": "MY", "format": "Search", "engagementStyle": "Graphic/Text-Led", "headline": "Claim Your Ad Rebate", "hook": "Financial incentive — 'rebate' is stronger than 'credits' for cost-conscious MY SMBs", "offer": "Ad rebate for advertising on TikTok", "cta": "Sign Up", "copy": "Tap into TikTok's engaged audience and convert leads effectively. Start now!", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=MY&domain=tiktok.com", "creativeNotes": "Market-adapted incentive — 'rebate' language more resonant in MY than 'credits'. TikTok running 3 active Google SEM ads in MY. Consistent pattern: TikTok buys Google SEM in every SEA market to intercept advertiser intent. Facebook Ads absent from Google SEM across all 6 SEA markets."}, {"id": "ttk-google-id-1", "brand": "TikTok", "platform": "Google", "market": "ID", "format": "Display", "engagementStyle": "Graphic/Text-Led", "headline": "Tontonan ke Pendaftaran — Ubah tontonan jadi pendaftaran kursus", "hook": "Localized Indonesian — 'Views to Registrations — Turn views into course registrations'", "offer": "TikTok For Business — education vertical lead generation", "cta": "Daftar (Register)", "copy": "Tangkap prospek pendidikan berkualitas di TikTok. (Capture quality education prospects on TikTok.)", "reach": null, "libraryUrl": "https://adstransparency.google.com/?region=ID&domain=tiktok.com", "creativeNotes": "Vertical-specific localization — TikTok running education-sector Display ads in Bahasa Indonesia on Google. Targets education businesses (online courses, tutoring) as a TikTok advertiser segment. This level of vertical + language localization is absent from all other competitors in SEA."}];
+var startDates = {};   // id -> 'YYYY-MM-DD', in-memory only
+var addedCount = 0;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function captureDate(){ var v=$('captureDate').value; return v? new Date(v+'T12:00:00') : new Date(); }
+function daysRunning(ad){
+  var d = ad.startDate || startDates[ad.id];
+  if(!d) return null;
+  var start = new Date(d+'T12:00:00');
+  var diff = Math.floor((captureDate() - start)/86400000);
+  return diff;
+}
+function flagsFor(ad){
+  var days = daysRunning(ad);
+  var f = [];
+  if(days===null) return f;
+  if(days>=0 && days<=7) f.push({cls:'flag-new',label:'New this week'});
+  if(days>=90) f.push({cls:'flag-strong',label:'Long-runner · 90+ days'});
+  else if(days>=30) f.push({cls:'flag-long',label:'Long-runner · 30+ days'});
+  return f;
+}
+
+/* ---------- Top ads spotlight ---------- */
+var TOP_PICKS = [
+  {id:'amz-tiktok-uk-2', signal:'Highest reach', why:'1M–10M unique users — the highest published reach in the whole file. A UGC-style, speak-to-camera hook built to trigger comments, then a cut to the film clip.'},
+  {id:'amz-meta-sg-1', signal:'Most scaled', why:'The same Amazon Q Business creative is running across all six SEA markets. Nobody scales a template that widely unless it is working — a global template with zero localisation.'},
+  {id:'ttk-google-sg-1', signal:'Biggest volume bet', why:'The capture notes 800+ active Google SEM ads for TikTok in Singapore alone. That is a heavy, sustained keyword investment to intercept advertiser intent.'},
+  {id:'ttk-meta-ph-1', signal:'Most repeated hook', why:'“Level Up Your Advertising” is repeated across 3 of TikTok\u2019s 5 Philippine video ads on Meta — the angle they keep coming back to, aimed straight at Facebook Ads\u2019 own advertiser base.'},
+  {id:'ttk-meta-id-1', signal:'Localisation standout', why:'The only fully localised Bahasa Indonesia B2B ad in the SEA file. TikTok is speaking to Indonesian SMBs in their own language while every competitor runs English-only creative.'}
+];
+var topMode = 'all'; // 'all' or a brand name — this is also the swipe file's active brand filter: while it names a brand, the swipe file, its count line and its format pills show that brand only
+function brandScopedAds(){
+  if(topMode==='all') return ADS;
+  return ADS.filter(function(a){ return a.brand.toLowerCase()===topMode.toLowerCase(); });
+}
+function syncBrandSel(){
+  var sel = $('brandSel'); if(!sel) return;
+  var has = false;
+  for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value===topMode) has = true; }
+  sel.value = (topMode!=='all' && has) ? topMode : 'all';
+}
+function applyActiveBrand(mode){
+  topMode = mode || 'all';
+  if(typeof topFormat!=='undefined') topFormat = 'all';
+  // A brand switch replaces the swipe sub-filters, so the new brand's ads are never hidden by the last brand's search text, platform or market picks.
+  if($('searchInput')) $('searchInput').value = '';
+  if(typeof formatFilter!=='undefined') formatFilter = 'all';
+  if($('platformSel')) $('platformSel').value = 'all';
+  if($('marketSel')) $('marketSel').value = 'all';
+  if($('flagSel')) $('flagSel').value = 'all';
+  syncBrandSel();
+  renderTopTabs(); renderTopAds(); renderPills(); renderGrid();
+}
+function reachScore(a){
+  if(!a.reach) return 0;
+  var m = String(a.reach).replace(/,/g,'').match(/([\d.]+)\s*([KM])?\s*unique/i);
+  // fall back to the largest number mentioned, e.g. "1M–10M" -> 10M
+  var nums = String(a.reach).match(/([\d.]+)\s*([KM])/gi) || [];
+  var best = 0;
+  nums.forEach(function(n){ var mm=n.match(/([\d.]+)\s*([KM])/i); var v=parseFloat(mm[1])*(mm[2].toUpperCase()==='M'?1000000:1000); if(v>best) best=v; });
+  return best;
+}
+function adById(id){ for(var i=0;i<ADS.length;i++){ if(ADS[i].id===id) return ADS[i]; } return null; }
+function topListFor(mode){
+  if(mode==='all'){ return TOP_PICKS.map(function(p){ var a=adById(p.id); return a?{ad:a,signal:p.signal,why:p.why}:null; }).filter(Boolean); }
+  var brandAds = ADS.filter(function(a){ return a.brand.toLowerCase()===mode.toLowerCase(); });
+  var picks = TOP_PICKS.filter(function(p){ var a=adById(p.id); return a && a.brand.toLowerCase()===mode.toLowerCase(); })
+    .map(function(p){ var a=adById(p.id); return {ad:a,signal:p.signal,why:p.why}; });
+  var pickedIds = {}; picks.forEach(function(x){ pickedIds[x.ad.id]=1; });
+  var rest = brandAds.filter(function(a){ return !pickedIds[a.id]; }).sort(function(x,y){ return reachScore(y)-reachScore(x); })
+    .map(function(a){ return {ad:a, signal: a.screenshot? 'Captured screenshot' : (a.reach? 'Published reach' : (a.format==='Video'?'Video · '+a.platform:'In the file')), why: a.screenshot? ('Captured by screenshot'+(a.capturedOn? ' on '+a.capturedOn : '')+' — the screenshot above is the record for this ad. Text details not yet added show as “Not recorded” on its full card; use “Add details” there whenever you want them.') : (a.reach? ('Published reach of '+a.reach+' — one of the few ads in this audit where a library published any reach at all.') : 'Included to round out this brand\u2019s top five from the captured file. No reach was published for this ad, so its place rests on being part of the brand\u2019s captured active set — check its full card below for the creative pattern.')}; });
+  return picks.concat(rest).slice(0,5);
+}
+function renderTopTabs(){
+  var brands = []; var seen={};
+  ADS.forEach(function(a){ if(!seen[a.brand]){ seen[a.brand]=1; brands.push(a.brand); } });
+  Object.keys(searchInfo).forEach(function(k){ var b=searchInfo[k].brand; if(!seen[b]){ seen[b]=1; brands.push(b); } });
+  brands.sort();
+  var tabs = [{key:'all',label:'Overall Top 5'}].concat(brands.map(function(b){ return {key:b,label:b}; }));
+  $('topTabs').innerHTML = tabs.map(function(t){
+    return '<button type="button" class="top-tab" data-t="'+esc(t.key)+'" aria-pressed="'+(topMode===t.key)+'">'+esc(t.label)+'</button>';
+  }).join('');
+  Array.prototype.forEach.call($('topTabs').querySelectorAll('.top-tab'), function(btn){
+    btn.addEventListener('click', function(){ applyActiveBrand(btn.getAttribute('data-t')); });
+  });
+}
+function visualTheme(a){
+  var notes = ((a.creativeNotes||'')+' '+(a.hook||'')).toLowerCase();
+  if(notes.indexOf('purple')>=0) return 'th-purple';
+  if(notes.indexOf('tiktok brand colors')>=0 || a.brand==='TikTok') return 'th-tiktok';
+  if(notes.indexOf('aws')>=0 || notes.indexOf('deep blue')>=0 || notes.indexOf('blue background')>=0) return 'th-aws';
+  if(notes.indexOf('bright')>=0 || notes.indexOf('saturated')>=0) return 'th-bright';
+  if(notes.indexOf('casual')>=0 || notes.indexOf('home setting')>=0) return 'th-warm';
+  if(notes.indexOf('dark')>=0) return 'th-dark';
+  return 'th-slate';
+}
+function creativeHTML(a){
+  if(a.screenshot){
+    return '<div class="creative shot"><img src="'+a.screenshot+'" alt="Captured screenshot of the ad: '+esc(a.headline)+'"><span class="cap-label real">Captured screenshot</span></div>';
+  }
+  var mockLabel = 'Visual mock — based on audit notes, not the real creative';
+  if(/search/i.test(a.format)){
+    return '<div class="creative textad"><span class="cap-label">'+mockLabel+' · text ad — no image</span>'+
+      '<div class="t-row"><span class="ad-badge">Ad</span><span>'+esc(a.brand)+' · via '+esc(a.platform)+'</span></div>'+
+      '<div class="t-head">'+esc(a.headline)+'</div><div class="t-copy">'+esc(a.copy)+'</div></div>';
+  }
+  var isVideo = a.format==='Video';
+  var theme = visualTheme(a);
+  return '<div class="creative '+(isVideo?'video':'banner')+' '+theme+'"><span class="cap-label">'+mockLabel+'</span>'+
+    (isVideo?'<span class="play" aria-hidden="true"></span>':'')+
+    '<div class="c-body"><div class="c-brand">'+esc(a.brand)+' · '+esc(a.platform)+' · '+esc(a.format)+' · '+esc(a.market)+'</div>'+
+    '<div class="c-head">'+esc(a.headline)+'</div><div class="c-hook">'+esc(a.hook)+'</div></div>'+
+    '<span class="c-cta">'+esc(a.cta)+'</span></div>';
+}
+function needsDetails(a){ return a && a.screenshot && (a.hook==='Not recorded' || a.offer==='Not recorded' || !a.startDate); }
+/* ---------- Compact visual cards: format groups, creator style, library counts ---------- */
+var topFormat = 'all'; // 'all' | 'Video' | 'Image' | 'Carousel' | 'Search' | 'Other' | '__creator'
+var libraryCounts = {}; // lowercase brand -> {count, source, dateISO} — manual records of what a library page showed, never live
+function formatGroupOf(a){
+  if(a.format==='Video') return 'Video';
+  if(a.format==='Image'||a.format==='Display') return 'Image';
+  if(a.format==='Carousel') return 'Carousel';
+  if(a.format==='Search'||a.format==='Search (SEM)') return 'Search';
+  return 'Other';
+}
+function isCreatorLed(a){
+  if(a.creator || a.engagementStyle==='UGC/Authentic') return true;
+  var t = ((a.creativeNotes||'')+' '+(a.headline||'')+' '+(a.hook||'')).toLowerCase();
+  return /ugc|creator|partnership|influencer/.test(t);
+}
+function fmtSeenDate(iso){
+  if(!iso) return '';
+  var d = new Date(iso+'T12:00:00');
+  return isNaN(d) ? iso : d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+function formatCountsFor(scoped){
+  var counts = {Video:0, Image:0, Carousel:0, Search:0, Other:0, creator:0};
+  scoped.forEach(function(a){ counts[formatGroupOf(a)]++; if(isCreatorLed(a)) counts.creator++; });
+  return counts;
+}
+function renderBrandHead(scoped){
+  var el = $('brandHead'); if(!el) return;
+  if(topMode==='all'){
+    var brandNames = []; var seenB = {};
+    ADS.forEach(function(a){ if(!seenB[a.brand]){ seenB[a.brand]=1; brandNames.push(a.brand); } });
+    var recs = Object.keys(libraryCounts).map(function(k){ var r = libraryCounts[k]; return '<div style="margin-top:4px"><span class="lib-num">'+esc(r.brand)+': '+Number(r.count).toLocaleString()+' active</span> <span style="color:var(--muted)">(as seen in '+esc(r.source)+', '+esc(fmtSeenDate(r.dateISO))+')</span></div>'; }).join('');
+    el.innerHTML = '<div class="brand-head"><div class="bh-main"><div class="bh-name">All brands</div>'+
+      '<div class="bh-count"><b>'+scoped.length+' captured ads</b> in the file · '+brandNames.map(esc).join(' · ')+'</div>'+
+      '<div class="bh-lib">'+(recs || '<span class="lib-none">No library counts recorded yet — pick a brand tab above to record the active-ad count its library page showed you.</span>')+'</div></div></div>';
+    return;
+  }
+  var counts = formatCountsFor(scoped);
+  var parts = ['Video','Image','Carousel','Search','Other'].filter(function(g){ return counts[g]>0; }).map(function(g){ return g+' '+counts[g]; });
+  var rec = libraryCounts[topMode.toLowerCase()];
+  var libHTML = rec
+    ? '<span class="lib-num">'+Number(rec.count).toLocaleString()+' active</span> <span style="color:var(--muted)">(as seen in '+esc(rec.source)+', '+esc(fmtSeenDate(rec.dateISO))+') — a manual record of what the library page showed, not a live number. Update it below whenever you look again.</span>'
+    : '<span class="lib-none">No library count recorded for '+esc(topMode)+' yet. Open its library (links in section 1), note the total the page shows, and record it here with the date — it will always display with its source and date, never as a live figure.</span>';
+  el.innerHTML = '<div class="brand-head"><div class="bh-main"><div class="bh-name">'+esc(topMode)+'</div>'+
+    '<div class="bh-count"><b>'+scoped.length+' captured ad'+(scoped.length===1?'':'s')+'</b> in the file'+(parts.length?' · '+parts.join(' · '):'')+'</div>'+
+    '<div class="bh-lib">'+libHTML+'</div></div>'+
+    '<form class="count-rec" id="countRecForm"><label class="f" for="crCount">Active ads in library <span>(as shown on the library page)</span></label>'+
+    '<div class="cr-grid"><input type="number" id="crCount" min="0" step="1" placeholder="e.g. 1330" required>'+
+    '<select id="crSource" aria-label="Library the count was seen in"><option>Meta Ad Library</option><option>Google Ads Transparency</option><option>LinkedIn Ad Library</option><option>TikTok Ad Library</option></select>'+
+    '<input type="date" id="crDate" aria-label="Date seen" required>'+
+    '<button type="submit" class="btn small">Save count</button></div>'+
+    '<p class="fine">Manual record only: this page cannot fetch live counts — no library API covers commercial ads. The number is stored exactly as you saw it, with its source and date, in this tab only.</p></form></div>';
+  var rec2 = libraryCounts[topMode.toLowerCase()];
+  if(rec2){ $('crCount').value = rec2.count; $('crSource').value = rec2.source; }
+  $('crDate').value = todayISO();
+  $('countRecForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var n = parseInt($('crCount').value, 10);
+    if(isNaN(n) || n<0) return;
+    libraryCounts[topMode.toLowerCase()] = {brand: topMode, count: n, source: $('crSource').value, dateISO: $('crDate').value || todayISO()};
+    renderTopAds();
+  });
+}
+function renderFmtTabs(scoped){
+  var el = $('fmtTabs'); if(!el) return;
+  var counts = formatCountsFor(scoped);
+  var groups = [{key:'all',label:'All',count:scoped.length},{key:'Video',label:'Video',count:counts.Video},{key:'Image',label:'Image',count:counts.Image},{key:'Carousel',label:'Carousel',count:counts.Carousel},{key:'Search',label:'Search',count:counts.Search},{key:'Other',label:'Other',count:counts.Other}];
+  el.innerHTML = groups.map(function(g){
+    return '<button type="button" class="fmt-tab" data-f="'+esc(g.key)+'" aria-pressed="'+(topFormat===g.key)+'">'+esc(g.label)+'<small>'+g.count+'</small></button>';
+  }).join('') +
+  '<button type="button" class="fmt-tab creator" data-f="__creator" aria-pressed="'+(topFormat==='__creator')+'">Creator-led<small>'+counts.creator+'</small></button>'+
+  '<span class="fmt-note">Creator-led is a style, not a format — it overlaps the format counts and doesn\u2019t add to the total. The four format groups plus Other sum to the brand total above.</span>';
+  Array.prototype.forEach.call(el.querySelectorAll('.fmt-tab'), function(btn){
+    btn.addEventListener('click', function(){ topFormat = btn.getAttribute('data-f'); renderTopAds(); });
+  });
+}
+function visualListFor(scoped){
+  var filtered = scoped.filter(function(a){
+    if(topFormat==='__creator') return isCreatorLed(a);
+    if(topFormat==='all') return true;
+    return formatGroupOf(a)===topFormat;
+  });
+  var pickOrder = {}; TOP_PICKS.forEach(function(p, i){ pickOrder[p.id]=i; });
+  var picks = filtered.filter(function(a){ return pickOrder[a.id]!==undefined; }).sort(function(x,y){ return pickOrder[x.id]-pickOrder[y.id]; });
+  var rest = filtered.filter(function(a){ return pickOrder[a.id]===undefined; }).sort(function(x,y){ return reachScore(y)-reachScore(x) || x.brand.localeCompare(y.brand); });
+  return {list: picks.concat(rest), total: filtered.length};
+}
+function vcardHTML(a){
+  var days = daysRunning(a);
+  var daysBadge;
+  if(days===null) daysBadge = '<span class="ov-badge">Start date not recorded</span>';
+  else if(days<0) daysBadge = '<span class="ov-badge">Check dates</span>';
+  else if(days<=7) daysBadge = '<span class="ov-badge fresh">New · '+days+'d running</span>';
+  else if(days>=30) daysBadge = '<span class="ov-badge long">'+days+'d running · Long-runner</span>';
+  else daysBadge = '<span class="ov-badge">'+days+'d running</span>';
+  var reachBadge = a.reach ? '<span class="ov-badge reach">Reach '+esc(a.reach.replace(/\s*unique users/i,''))+'</span>' : '';
+  var pick = null; TOP_PICKS.forEach(function(p){ if(p.id===a.id) pick = p; });
+  var jumpQ = a.quick ? a.brand : a.headline.slice(0,28);
+  return '<article class="vcard js-jump" data-q="'+esc(jumpQ)+'" title="Open the full card in the swipe file">'+
+    '<div class="creative-wrap">'+creativeHTML(a)+'<div class="ov-col">'+daysBadge+reachBadge+'</div></div>'+
+    (pick?'<span class="v-signal">'+esc(pick.signal)+'</span>':'')+
+    '<h3>'+esc(a.headline)+'</h3>'+
+    '<div class="v-meta">'+esc(a.brand)+' · '+esc(a.platform)+' · '+esc(a.market)+' · '+esc(a.format)+'</div>'+
+    '<span class="v-jump">Full card in swipe file ↓</span>'+
+  '</article>';
+}
+function renderTopAds(){
+  var scoped = brandScopedAds();
+  renderBrandHead(scoped);
+  renderFmtTabs(scoped);
+  if(topMode!=='all' && scoped.length===0){
+    var info = searchInfo[topMode.toLowerCase()];
+    if(info){
+      var when = info.when.toLocaleString([], {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'});
+      var libBtns = linkCardsFor(info.brand, info.domain).map(function(c){
+        return '<a class="btn small" href="'+esc(c.url)+'" target="_blank" rel="noopener" style="text-decoration:none">Open '+esc(c.short)+' \u2197</a>';
+      }).join('');
+      $('topNote').textContent = 'New search \u2014 capturing for '+info.brand+' starts from the search you just ran, not from the July snapshot. Record the active-ad count its library page shows in the brand header above.';
+      $('topGrid').innerHTML = '<div class="search-start" style="grid-column:1/-1">'+
+        '<h3>Capture started for '+esc(info.brand)+' \u2014 '+esc(when)+'</h3>'+
+        '<p>Nothing was being captured for <b>'+esc(info.brand)+'</b> before this search. From now, this session tracks <b>'+esc(info.domain)+'</b>: every ad you add below appears here as a visual card and lands in the swipe file. The Amazon, Google and TikTok sample sets stay in the tabs above whenever you want them.</p>'+
+        '<div class="search-steps">'+
+          '<div class="search-step"><b>1 \u00b7 Open a library</b>Meta searches by name, Google by the domain '+esc(info.domain)+', LinkedIn by company name \u2014 the buttons below are already filled in with your search. Note the total the library page shows and save it in the brand header above \u2014 that\u2019s the ad count, recorded with its source and date.</div>'+
+          '<div class="search-step"><b>2 \u00b7 Pick ads worth keeping</b>Note each ad\u2019s format and the \u201cstarted running\u201d date the library shows \u2014 that date is what switches on the days-running badge on its card.</div>'+
+          '<div class="search-step"><b>3 \u00b7 Screenshot it \u2014 that\u2019s the capture</b>Screenshot the ad in the library, then in section 5 drop or paste that screenshot into Quick capture and save. No form. It becomes that ad\u2019s real thumbnail here and appears immediately as a '+esc(info.brand)+' visual card.</div>'+
+        '</div>'+
+        '<div class="search-actions">'+libBtns+'<button type="button" class="btn secondary small js-add-capture" data-brand="'+esc(info.brand)+'">Add a capture for '+esc(info.brand)+'</button></div>'+
+        '<p class="fine">Why not automatic? The libraries publish no feed this page can pull from \u2014 Meta\u2019s API covers political and EU/UK ads only, and Google has no public API for commercial ads. So capture starts at your search and is added by hand; nothing before this search is backfilled or invented, and counts are recorded from what the library page showed you, never fetched live.</p>'+
+      '</div>';
+      var addBtn = $('topGrid').querySelector('.js-add-capture');
+      if(addBtn){ addBtn.addEventListener('click', function(){
+        var b = addBtn.getAttribute('data-brand');
+        if($('qBrand')) $('qBrand').value = b;
+        if($('fBrand')) $('fBrand').value = b;
+        document.getElementById('capture').scrollIntoView({behavior:'smooth'});
+        setTimeout(function(){ var dzEl=$('dropzone'); if(dzEl) dzEl.focus({preventScroll:true}); }, 400);
+      }); }
+      return;
+    }
+    $('topNote').textContent = '';
+    $('topGrid').innerHTML = '<div class="empty" style="grid-column:1/-1"><b>No captured ads for '+esc(topMode)+' yet</b>Look '+esc(topMode)+' up in section 1 to start capturing it \u2014 its library searches and capture list appear here from that search on.</div>';
+    return;
+  }
+  var res = visualListFor(scoped);
+  var shown = res.list.slice(0, 8);
+  var scopeName = topMode==='all' ? 'across all brands' : 'for '+topMode;
+  var fmtName = topFormat==='all' ? '' : (topFormat==='__creator' ? ' \u00b7 Creator-led only' : ' \u00b7 '+topFormat+' only');
+  if(res.total===0){
+    $('topNote').textContent = 'No '+ (topFormat==='__creator' ? 'creator-led' : topFormat) +' ads captured '+scopeName+' \u2014 that count is honestly zero in this file, not hidden.';
+    $('topGrid').innerHTML = '<div class="empty" style="grid-column:1/-1"><b>None captured in this group</b>Pick another format tab above, or capture one from a library via Quick capture in section 5.</div>';
+    return;
+  }
+  $('topNote').textContent = 'Showing '+shown.length+' of '+res.total+' captured ads '+scopeName+fmtName+' \u2014 curated picks first, then by published reach. Click a card for its full swipe-file card.';
+  $('topGrid').innerHTML = shown.map(vcardHTML).join('');
+  Array.prototype.forEach.call($('topGrid').querySelectorAll('.js-jump'), function(card){
+    card.addEventListener('click', function(){
+      $('searchInput').value = card.getAttribute('data-q');
+      formatFilter='all'; renderPills(); renderGrid();
+      document.getElementById('swipe').scrollIntoView({behavior:'smooth'});
+    });
+  });
+}
+
+/* ---------- Lookup ---------- */
+var searchInfo = {}; // lowercase brand -> {brand, domain, when} for searches started in section 1
+function linkCardsFor(brand, domain){
+  var q = encodeURIComponent(brand);
+  return [
+    {name:'Meta Ad Library', short:'Meta', how:'Searches by Page name / keyword', url:'https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=ALL&q='+q+'&search_type=keyword_unordered', cta:'Open Meta search →'},
+    {name:'Google Ads Transparency', short:'Google', how:'Searches by domain: '+domain, url:'https://adstransparency.google.com/?domain='+encodeURIComponent(domain), cta:'Open Google search →'},
+    {name:'LinkedIn Ad Library', short:'LinkedIn', how:'Searches by company name · generator link is global, live-unverified', url:'https://www.linkedin.com/ad-library/search?keywords='+q+'&dateRange=LAST_30_DAYS', cta:'Open LinkedIn search →'}
+  ];
+}
+function buildLinks(syncTop){
+  var brand = $('brandInput').value.trim() || 'Amazon';
+  var domain = $('domainInput').value.trim().replace(/^https?:\/\//,'').replace(/\/.*$/,'') || (brand.toLowerCase().replace(/[^a-z0-9]+/g,'')+'.com');
+  var cards = linkCardsFor(brand, domain);
+  $('linkResults').innerHTML = cards.map(function(c){
+    return '<div class="link-card"><b>'+esc(c.name)+'</b><p>'+esc(c.how)+'</p><a href="'+esc(c.url)+'" target="_blank" rel="noopener">'+esc(c.cta)+'</a></div>';
+  }).join('');
+  if($('qBrand') && !$('qBrand').value.trim()) $('qBrand').value = brand;
+  if(syncTop){
+    if($('qBrand')) $('qBrand').value = brand;
+    // A search starts capturing this brand from this moment — record it so section 2
+    // reflects the search itself, not just the July snapshot.
+    searchInfo[brand.toLowerCase()] = {brand:brand, domain:domain, when:new Date()};
+    // Show this brand's top ads inline, right below — and filter the swipe file, its count
+    // line and its format pills to this brand only, so no other brand's cards (AWS included) stay on show.
+    var match = null;
+    ADS.forEach(function(a){ if(a.brand.toLowerCase()===brand.toLowerCase()) match = a.brand; });
+    applyActiveBrand(match || brand);
+    document.getElementById('top').scrollIntoView({behavior:'smooth'});
+  }
+}
+$('genBtn').addEventListener('click', function(){ buildLinks(true); });
+$('brandInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); buildLinks(true); }});
+$('domainInput').addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); buildLinks(true); }});
+
+/* ---------- Stats ---------- */
+function renderStats(){
+  var withReach = ADS.filter(function(a){return a.reach;}).length;
+  var videos = ADS.filter(function(a){return a.format==='Video';}).length;
+  var markets = {}; ADS.forEach(function(a){ markets[a.market]=1; });
+  $('statsRow').innerHTML =
+    '<div class="stat"><div class="v">'+ADS.length+'</div><div class="k">Ads in the swipe file</div><div class="d">From the July 2026 audit</div></div>'+
+    '<div class="stat"><div class="v">'+videos+'</div><div class="k">Video ads</div><div class="d">The dominant format in this audit</div></div>'+
+    '<div class="stat"><div class="v">'+withReach+' of '+ADS.length+'</div><div class="k">With published reach</div><div class="d">All 5 are TikTok HK video ads</div></div>'+
+    '<div class="stat"><div class="v">0</div><div class="k">With published spend</div><div class="d">Spend is not published for commercial ads — on any card</div></div>';
+}
+
+/* ---------- Format pills ---------- */
+var formatFilter = 'all';
+function formatGroups(){
+  var scoped = brandScopedAds();
+  var counts = {};
+  scoped.forEach(function(a){ counts[a.format]=(counts[a.format]||0)+1; });
+  var order = ['Video','Image','Display','Search','Search (SEM)','Sponsored Content','Sponsored InMail'];
+  var groups = order.filter(function(f){return counts[f];}).map(function(f){return {key:f,label:f,count:counts[f]};});
+  var ugc = scoped.filter(function(a){return a.engagementStyle==='UGC/Authentic' || a.creator;}).length;
+  groups.push({key:'Carousel',label:'Carousel',count:0,empty:true});
+  groups.push({key:'__creator',label:'Creator-led',count:ugc,empty:ugc===0});
+  return groups;
+}
+function renderPills(){
+  var groups = formatGroups();
+  var html = '<button type="button" class="pill" data-f="all" aria-pressed="'+(formatFilter==='all')+'">All formats<small>'+brandScopedAds().length+'</small></button>';
+  html += groups.map(function(g){
+    return '<button type="button" class="pill'+(g.empty?' empty':'')+'" data-f="'+esc(g.key)+'" aria-pressed="'+(formatFilter===g.key)+'">'+esc(g.label)+'<small>'+g.count+(g.empty?' · none captured':'')+'</small></button>';
+  }).join('');
+  $('formatPills').innerHTML = html;
+  Array.prototype.forEach.call($('formatPills').querySelectorAll('.pill'), function(p){
+    p.addEventListener('click', function(){ formatFilter = p.getAttribute('data-f'); renderPills(); renderGrid(); });
+  });
+}
+
+/* ---------- Filters ---------- */
+function fillSelect(sel, values, allLabel){
+  var cur = sel.value;
+  sel.innerHTML = '<option value="all">'+allLabel+'</option>' + values.map(function(v){return '<option value="'+esc(v)+'">'+esc(v)+'</option>';}).join('');
+  if(values.indexOf(cur)>=0) sel.value = cur;
+}
+function refreshFilterOptions(){
+  function uniq(key){ var s={}; ADS.forEach(function(a){s[a[key]]=1;}); return Object.keys(s).sort(); }
+  fillSelect($('platformSel'), uniq('platform'), 'All platforms');
+  fillSelect($('brandSel'), uniq('brand'), 'All brands');
+  fillSelect($('marketSel'), uniq('market'), 'All markets');
+}
+function currentList(){
+  var q = $('searchInput').value.trim().toLowerCase();
+  var plat = $('platformSel').value, brand = $('brandSel').value, mkt = $('marketSel').value, flag = $('flagSel').value;
+  var list = ADS.filter(function(a){
+    if(topMode!=='all' && a.brand.toLowerCase()!==topMode.toLowerCase()) return false;
+    if(formatFilter==='__creator'){ if(!(a.engagementStyle==='UGC/Authentic'||a.creator)) return false; }
+    else if(formatFilter!=='all' && a.format!==formatFilter) return false;
+    if(plat!=='all' && a.platform!==plat) return false;
+    if(brand!=='all' && a.brand!==brand) return false;
+    if(mkt!=='all' && a.market!==mkt) return false;
+    if(q && (a.headline+' '+a.hook+' '+a.offer).toLowerCase().indexOf(q)<0) return false;
+    var days = daysRunning(a);
+    if(flag==='long' && !(days!==null && days>=30)) return false;
+    if(flag==='strong' && !(days!==null && days>=90)) return false;
+    if(flag==='new' && !(days!==null && days>=0 && days<=7)) return false;
+    if(flag==='reach' && !a.reach) return false;
+    if(flag==='undated' && days!==null) return false;
+    return true;
+  });
+  var sort = $('sortSel').value;
+  list.sort(function(x,y){
+    if(sort==='days'){ var dx=daysRunning(x), dy=daysRunning(y); if(dx===null&&dy===null) return 0; if(dx===null) return 1; if(dy===null) return -1; return dy-dx; }
+    if(sort==='newest'){ var sx=x.startDate||startDates[x.id]||'', sy=y.startDate||startDates[y.id]||''; if(sx===sy) return 0; if(!sx) return 1; if(!sy) return -1; return sy<sx?-1:1; }
+    if(sort==='format') return x.format.localeCompare(y.format) || x.brand.localeCompare(y.brand);
+    if(sort==='platform') return x.platform.localeCompare(y.platform) || x.brand.localeCompare(y.brand);
+    if(sort==='market') return x.market.localeCompare(y.market) || x.brand.localeCompare(y.brand);
+    return x.brand.localeCompare(y.brand) || x.platform.localeCompare(y.platform);
+  });
+  return list;
+}
+
+/* ---------- Grid ---------- */
+function cardHTML(a){
+  var days = daysRunning(a);
+  var flags = flagsFor(a);
+  var startVal = a.startDate || startDates[a.id] || '';
+  var longHTML;
+  if(days===null){
+    longHTML = '<span class="long-status not">Longevity: Not recorded — add the “started running” date from the library.</span>';
+  } else if(days<0){
+    longHTML = '<span class="long-status">Starts after the capture date — check the two dates.</span>';
+  } else {
+    longHTML = '<span class="long-status">'+days+' day'+(days===1?'':'s')+' running</span> <span style="color:var(--muted);font-size:12.5px">to '+esc($('captureDate').value)+'</span>';
+  }
+  var badges = '<span class="badge">'+esc(a.brand)+'</span><span class="badge platform">'+esc(a.platform)+'</span><span class="badge">'+esc(a.market)+' · '+esc(a.format)+'</span><span class="badge">'+esc(a.engagementStyle)+'</span>' +
+    (a.quick?'<span class="badge flag-new">Screenshot capture</span>':'') +
+    flags.map(function(f){return '<span class="badge '+f.cls+'">'+esc(f.label)+'</span>';}).join('');
+  var libBtn = (a.libraryUrl && a.libraryUrl!=='#') ? '<a class="btn secondary small" href="'+esc(a.libraryUrl)+'" target="_blank" rel="noopener" style="text-decoration:none">View in ad library ↗</a>' : '';
+  var detailBtn = a.added ? '<button type="button" class="btn small js-add-details" data-id="'+esc(a.id)+'">Add details</button>' : '';
+  var copyField = (a.copy && a.copy!==a.hook) ? '<div class="field"><span class="lab">Ad copy</span><p>'+esc(a.copy)+'</p></div>' : (a.quick ? '<div class="field"><span class="lab">Ad copy</span><p>Not recorded — the screenshot above is the record for this ad.</p></div>' : '<div class="field"><span class="lab">Ad copy</span><p>'+esc(a.copy)+'</p></div>');
+  return '<article class="card" data-id="'+esc(a.id)+'">'+
+    '<div class="badges">'+badges+'</div>'+
+    (a.screenshot ? creativeHTML(a) : '')+
+    '<h3>'+esc(a.headline)+'</h3>'+
+    '<div class="field"><span class="lab">Hook</span><p>'+esc(a.hook)+'</p></div>'+
+    '<div class="offer-cta"><div class="field"><span class="lab">Offer</span><p>'+esc(a.offer)+'</p></div><div class="cta">'+esc(a.cta)+'</div></div>'+
+    copyField+
+    '<details><summary>Creative notes</summary><p>'+esc(a.creativeNotes)+'</p></details>'+
+    '<div class="meta-lines">'+
+      '<div><b>Country:</b> '+esc(a.market)+(a.market==='Not recorded'?'':' (the market this ad was captured in)')+'</div>'+
+      (a.capturedOn?'<div><b>Captured:</b> '+esc(a.capturedOn)+' — screenshot capture, in this tab only</div>':'')+
+      '<div><b>Reach:</b> '+(a.reach? esc(a.reach) : 'Not published')+'</div>'+
+      '<div><b>Age / gender:</b> Not published outside EU/UK</div>'+
+      '<div><b>Spend:</b> Not published by the libraries</div>'+
+    '</div>'+
+    '<div class="longevity"><div class="row"><div><label class="f" for="sd-'+esc(a.id)+'">First seen / started running</label><input type="date" id="sd-'+esc(a.id)+'" class="start-input" data-id="'+esc(a.id)+'" value="'+esc(startVal)+'"></div><div>'+longHTML+'</div></div></div>'+
+    '<div class="card-foot">'+detailBtn+libBtn+'</div>'+
+  '</article>';
+}
+function renderGrid(){
+  var list = currentList();
+  var scoped = brandScopedAds();
+  var clearBtn = $('clearBrandBtn');
+  if(topMode==='all'){
+    $('resultCount').textContent = 'Showing '+list.length+' of '+ADS.length+' ads';
+    if(clearBtn) clearBtn.style.display = 'none';
+  } else {
+    $('resultCount').textContent = 'Showing '+list.length+' of '+scoped.length+' ads for '+topMode;
+    if(clearBtn){ clearBtn.textContent = 'Clear filter — show all '+ADS.length; clearBtn.style.display = ''; }
+  }
+  if(topMode!=='all' && scoped.length===0){
+    var info = searchInfo[topMode.toLowerCase()];
+    var dom = info ? info.domain : (topMode.toLowerCase().replace(/[^a-z0-9]+/g,'')+'.com');
+    var whenTxt = info ? ' — '+info.when.toLocaleString([], {day:'numeric', month:'short', hour:'numeric', minute:'2-digit'}) : '';
+    var libBtns2 = linkCardsFor(topMode, dom).map(function(c){
+      return '<a class="btn small" href="'+esc(c.url)+'" target="_blank" rel="noopener" style="text-decoration:none">Open '+esc(c.short)+' ↗</a>';
+    }).join('');
+    $('grid').innerHTML = '<div class="search-start">'+
+      '<h3>Capture started for '+esc(topMode)+esc(whenTxt)+'</h3>'+
+      '<p>No ads for <b>'+esc(topMode)+'</b> are in the captured file yet, so there are no cards to show for it — and no other brand\u2019s cards are shown in its place. Open a library below, screenshot an ad worth keeping, then drop that screenshot into Quick capture in section 5: it becomes '+esc(topMode)+'\u2019s first card here and its first Top ad. Search only filters this captured file and builds these links — it does not fetch live ads, and no backend is combing the libraries for '+esc(topMode)+'.</p>'+
+      '<div class="search-actions" style="margin-top:14px">'+libBtns2+'<button type="button" class="btn secondary small js-swipe-quick" data-brand="'+esc(topMode)+'">Go to Quick capture for '+esc(topMode)+'</button></div>'+
+    '</div>';
+    var qb = $('grid').querySelector('.js-swipe-quick');
+    if(qb){ qb.addEventListener('click', function(){
+      var b = qb.getAttribute('data-brand');
+      if($('qBrand')) $('qBrand').value = b;
+      if($('fBrand')) $('fBrand').value = b;
+      document.getElementById('capture').scrollIntoView({behavior:'smooth'});
+      setTimeout(function(){ var dzEl=$('dropzone'); if(dzEl) dzEl.focus({preventScroll:true}); }, 400);
+    }); }
+    return;
+  }
+  if(formatFilter==='Carousel'){
+    $('grid').innerHTML = '<div class="empty"><b>No carousels captured'+(topMode!=='all'?' for '+esc(topMode):' in this audit')+'</b>'+(topMode!=='all' ? 'None of '+esc(topMode)+'\u2019s '+scoped.length+' captured ads is a carousel.' : 'None of the 36 real ads in the July 2026 China + SEA audit is a carousel.')+' When you capture one from a library, drop its screenshot into Quick capture below and it will appear here.</div>';
+    return;
+  }
+  if(formatFilter==='__creator' && list.length===0){
+    $('grid').innerHTML = '<div class="empty"><b>No creator-led ads captured'+(topMode!=='all'?' for '+esc(topMode):' in this audit')+'</b>No ad in the file is flagged as a partnership / creator ad, and the closest style in the data — “UGC/Authentic” — does not appear either. Creator-led captures you add via Full capture below (tick “Yes — creator-led”) will show here.</div>';
+    return;
+  }
+  if(list.length===0){
+    $('grid').innerHTML = '<div class="empty"><b>No ads'+(topMode!=='all'?' for '+esc(topMode):'')+' match those filters</b>Try clearing the search, or pick a different platform or market'+(topMode!=='all'?' — or use “Clear filter — show all '+ADS.length+'” above to see the whole file again.':'.')+'</div>';
+    return;
+  }
+  $('grid').innerHTML = list.map(cardHTML).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('.start-input'), function(inp){
+    inp.addEventListener('change', function(){
+      var id = inp.getAttribute('data-id');
+      if(inp.value) startDates[id]=inp.value; else delete startDates[id];
+      var ad = adById(id); if(ad) ad.startDate = inp.value || null;
+      renderGrid(); renderTopAds();
+    });
+  });
+  Array.prototype.forEach.call($('grid').querySelectorAll('.js-add-details'), function(btn){
+    btn.addEventListener('click', function(){ openAddDetails(btn.getAttribute('data-id')); });
+  });
+}
+
+/* ---------- Download ---------- */
+function downloadCSV(){
+  var rows = [['Brand','Platform','Market (country)','Format','Style','Headline','Hook','Offer','CTA','Reach','Started running','Days running (to capture date)','Flags','Captured on','Capture method','Library URL','Library active count (manual record)','Library count source','Library count date seen']];
+  ADS.forEach(function(a){
+    var days = daysRunning(a);
+    var lc = libraryCounts[a.brand.toLowerCase()];
+    rows.push([a.brand,a.platform,a.market,a.format,a.engagementStyle,a.headline,a.hook,a.offer,a.cta, a.reach||'Not published', a.startDate||startDates[a.id]||'Not recorded', days===null?'Not recorded':days, flagsFor(a).map(function(f){return f.label;}).join('; '), a.capturedOn||'', a.quick?'Screenshot (Quick capture)':(a.added?'Full capture':'July 2026 audit'), a.libraryUrl, lc?lc.count:'Not recorded', lc?lc.source:'', lc?lc.dateISO:'']);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('a');
+  link.href = url; link.download = 'whats-winning-swipe-file.csv';
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 500);
+}
+$('downloadBtn').addEventListener('click', downloadCSV);
+$('resetBtn').addEventListener('click', function(){
+  startDates = {};
+  editingId = null;
+  if($('fullSubmitBtn')) $('fullSubmitBtn').textContent = 'Add to swipe file';
+  if($('cancelEditBtn')) $('cancelEditBtn').style.display = 'none';
+  clearQuickScreenshot();
+  if($('qBrand')) $('qBrand').value=''; if($('qMsg')) $('qMsg').textContent='';
+  $('searchInput').value=''; $('flagSel').value='all'; $('sortSel').value='brand';
+  formatFilter='all';
+  libraryCounts = {}; topFormat='all';
+  if($('qLibCount')) $('qLibCount').value='';
+  ADS = ADS.filter(function(a){ return !a.added; });
+  topMode='all';
+  refreshFilterOptions(); syncBrandSel(); renderStats(); renderPills(); renderGrid(); renderTopTabs(); renderTopAds();
+});
+
+/* ---------- Quick capture: screenshot + brand only ---------- */
+var quickScreenshot = null; // data URL, in this tab only
+var quickFileName = '';
+var editingId = null;
+function todayISO(){ var t=new Date(); return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0'); }
+function setQuickScreenshot(dataUrl, name){
+  quickScreenshot = dataUrl; quickFileName = name || 'Pasted / dropped screenshot';
+  $('qPreviewImg').src = dataUrl;
+  $('qFileMeta').textContent = quickFileName + ' — this image becomes the ad\u2019s thumbnail, labelled \u201cCaptured screenshot\u201d.';
+  $('qPreview').classList.add('show');
+  $('qMsg').textContent=''; $('qMsg').classList.remove('err');
+}
+function clearQuickScreenshot(){
+  quickScreenshot = null; quickFileName='';
+  if($('qShot')) $('qShot').value='';
+  if($('qPreviewImg')) $('qPreviewImg').removeAttribute('src');
+  if($('qPreview')) $('qPreview').classList.remove('show');
+  if($('ocrFields')) $('ocrFields').classList.remove('show');
+  ['qHeadline','qHook','qCta'].forEach(function(id){ if($(id)) $(id).value=''; });
+}
+function readImageFile(file){
+  if(!file || !/^image\//.test(file.type||'')){ $('qMsg').textContent='That file isn\u2019t an image — please use a screenshot (PNG or JPG).'; $('qMsg').classList.add('err'); return; }
+  var reader = new FileReader();
+  reader.onload = function(){ setQuickScreenshot(reader.result, file.name || 'Screenshot'); };
+  reader.onerror = function(){ $('qMsg').textContent='Couldn\u2019t read that file — try choosing it again.'; $('qMsg').classList.add('err'); };
+  reader.readAsDataURL(file);
+}
+var dz = $('dropzone');
+dz.addEventListener('click', function(e){ if(e.target !== $('qShot')) $('qShot').click(); });
+dz.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('qShot').click(); }});
+$('qShot').addEventListener('change', function(){ if(this.files && this.files[0]) readImageFile(this.files[0]); });
+['dragenter','dragover'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.add('drag'); }); });
+['dragleave','drop'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); dz.classList.remove('drag'); }); });
+dz.addEventListener('drop', function(e){
+  var files = e.dataTransfer && e.dataTransfer.files;
+  if(files && files[0]) readImageFile(files[0]);
+});
+document.addEventListener('paste', function(e){
+  var items = (e.clipboardData && e.clipboardData.items) || [];
+  for(var i=0;i<items.length;i++){
+    if(/^image\//.test(items[i].type||'')){
+      var f = items[i].getAsFile();
+      if(f){ readImageFile(f); document.getElementById('capture').scrollIntoView({behavior:'smooth'}); }
+      break;
+    }
+  }
+});
+$('qRemove').addEventListener('click', function(e){ e.stopPropagation(); clearQuickScreenshot(); });
+$('qSave').addEventListener('click', function(){
+  var brand = $('qBrand').value.trim();
+  $('qMsg').classList.remove('err');
+  if(!quickScreenshot){ $('qMsg').textContent='Add a screenshot first — drop it, paste it, or click the box to choose the file.'; $('qMsg').classList.add('err'); dz.focus(); return; }
+  if(!brand){ $('qMsg').textContent='Add the brand — that\u2019s the only other thing Quick capture needs.'; $('qMsg').classList.add('err'); $('qBrand').focus(); return; }
+  addedCount++;
+  var capturedOn = todayISO();
+  var ocrHead = $('qHeadline').value.trim(), ocrHook = $('qHook').value.trim(), ocrCta = $('qCta').value.trim();
+  var hasOcr = $('ocrFields').classList.contains('show') && (ocrHead||ocrHook||ocrCta);
+  var niceDate = new Date(capturedOn+'T12:00:00').toLocaleDateString([], {day:'numeric', month:'short', year:'numeric'});
+  var ad = {
+    id:'added-'+Date.now()+'-'+addedCount, added:true, quick:true,
+    brand:brand,
+    platform:$('qPlatform').value || 'Not recorded',
+    market:($('qMarket').value.trim().toUpperCase() || 'Not recorded'),
+    format:'Image',
+    engagementStyle:'Screenshot capture',
+    creator:false,
+    headline: hasOcr && ocrHead ? ocrHead : ('Screenshot capture — '+brand+' — '+niceDate),
+    hook: hasOcr && ocrHook ? ocrHook : 'Not recorded',
+    offer:'Not recorded',
+    cta: hasOcr && ocrCta ? ocrCta : 'Not recorded',
+    copy: hasOcr && ocrHook ? ocrHook : 'Not recorded',
+    reach:null,
+    libraryUrl:'#',
+    creativeNotes: hasOcr ? 'Captured by screenshot only. Headline / hook / CTA above were suggested by OCR and checked before saving — the screenshot is the record.' : 'Captured by screenshot only — no text details recorded yet. The screenshot above is the record for this ad. Use \u201cAdd details\u201d to add headline, hook, dates or notes later.',
+    startDate:$('qStart').value||null,
+    capturedOn:capturedOn,
+    screenshot:quickScreenshot
+  };
+  ADS.unshift(ad);
+  if(ad.startDate) startDates[ad.id]=ad.startDate;
+  var libNote = '';
+  var libCountVal = $('qLibCount').value.trim();
+  if(libCountVal!==''){
+    var libN = parseInt(libCountVal, 10);
+    if(!isNaN(libN) && libN>=0){
+      libraryCounts[brand.toLowerCase()] = {brand:brand, count:libN, source:$('qLibSource').value, dateISO:$('qLibDate').value||capturedOn};
+      libNote = ' Library count recorded for '+brand+': '+libN.toLocaleString()+' active (as seen in '+$('qLibSource').value+', '+fmtSeenDate(libraryCounts[brand.toLowerCase()].dateISO)+').';
+    }
+  }
+  formatFilter='all';
+  if($('searchInput')) $('searchInput').value='';
+  topMode = ad.brand; topFormat = 'all';
+  refreshFilterOptions(); syncBrandSel(); renderStats(); renderPills(); renderGrid(); renderTopTabs(); renderTopAds();
+  $('qMsg').textContent='Saved \u201c'+ad.headline+'\u201d — it\u2019s now in the swipe file and in '+brand+'\u2019s Top ads, with your screenshot as its thumbnail. It lives in this tab only.'+libNote;
+  clearQuickScreenshot();
+  $('qPlatform').value=''; $('qMarket').value=''; $('qStart').value=''; $('qLibCount').value='';
+  document.getElementById('swipe').scrollIntoView({behavior:'smooth'});
+});
+/* Optional OCR — Tesseract.js loaded on demand from CDN, runs entirely in the browser */
+var tessLoading = null;
+function loadTesseract(){
+  if(window.Tesseract) return Promise.resolve(window.Tesseract);
+  if(tessLoading) return tessLoading;
+  tessLoading = new Promise(function(resolve, reject){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload = function(){ window.Tesseract ? resolve(window.Tesseract) : reject(new Error('no Tesseract')); };
+    s.onerror = function(){ reject(new Error('load failed')); };
+    document.head.appendChild(s);
+    setTimeout(function(){ if(!window.Tesseract) reject(new Error('timeout')); }, 20000);
+  });
+  return tessLoading;
+}
+$('ocrBtn').addEventListener('click', function(){
+  if(!quickScreenshot){ $('ocrStatus').textContent='Add a screenshot first, then read its text. The screenshot-only save below works without this step.'; return; }
+  $('ocrBtn').disabled = true;
+  $('ocrStatus').textContent='Loading text reading\u2026 (first use needs internet to fetch the reader — nothing about your screenshot leaves this tab).';
+  loadTesseract().then(function(T){
+    $('ocrStatus').textContent='Reading text from your screenshot\u2026 this can take a few seconds on a large image.';
+    return T.recognize(quickScreenshot, 'eng');
+  }).then(function(result){
+    var raw = (result && result.data && result.data.text) || '';
+    var lines = raw.split(/\n+/).map(function(l){ return l.replace(/\s+/g,' ').trim(); }).filter(function(l){ return l.length>1; });
+    if(!lines.length){ $('ocrStatus').textContent='No readable text found in that screenshot. No problem — Save to swipe file below still captures it; you can add details later from its card.'; return; }
+    var ctaWords = /learn more|shop now|sign up|get started|watch now|book now|buy now|start now|download|subscribe|apply now/i;
+    var ctaLine = '';
+    lines.forEach(function(l){ if(!ctaLine && ctaWords.test(l)) ctaLine = l; });
+    $('qHeadline').value = lines[0].slice(0,140);
+    $('qHook').value = lines.slice(1).join(' ').slice(0,220);
+    $('qCta').value = ctaLine.slice(0,60);
+    $('ocrFields').classList.add('show');
+    $('ocrStatus').textContent='Done — suggestions are in the fields below, labelled \u201cSuggested by OCR \u2014 check before saving\u201d. Edit anything that\u2019s wrong, then Save. Nothing from OCR is saved until you press Save.';
+  }).catch(function(){
+    $('ocrStatus').textContent='Text reading needs internet and couldn\u2019t load just now. The screenshot-only save below still works — add the screenshot and brand, then Save to swipe file.';
+  }).finally(function(){ $('ocrBtn').disabled = false; });
+});
+
+/* ---------- Add details: open the full form pre-filled for one entry ---------- */
+function openAddDetails(id){
+  var a = adById(id); if(!a) return;
+  editingId = id;
+  $('fullCapture').open = true;
+  $('fBrand').value = a.brand || '';
+  // Full form requires platform/market/format — fall back to sensible blanks the user can correct
+  $('fPlatform').value = (a.platform && a.platform!=='Not recorded') ? a.platform : '';
+  $('fMarket').value = (a.market && a.market!=='Not recorded') ? a.market : '';
+  $('fFormat').value = a.format || 'Image';
+  $('fStart').value = a.startDate || startDates[a.id] || '';
+  $('fCta').value = (a.cta && a.cta!=='Not recorded') ? a.cta : '';
+  $('fHeadline').value = a.quick && /^Screenshot capture \u2014/.test(a.headline||'') ? '' : (a.headline||'');
+  $('fCreator').value = a.creator ? 'yes' : 'no';
+  $('fHook').value = (a.hook && a.hook!=='Not recorded') ? a.hook : '';
+  $('fOffer').value = (a.offer && a.offer!=='Not recorded') ? a.offer : '';
+  $('fUrl').value = (a.libraryUrl && a.libraryUrl!=='#') ? a.libraryUrl : '';
+  $('fReach').value = a.reach || '';
+  $('fNotes').value = a.quick ? '' : (a.creativeNotes||'');
+  $('fullSubmitBtn').textContent = 'Save details for this ad';
+  $('cancelEditBtn').style.display = '';
+  $('formMsg').textContent = 'Adding details for \u201c'+a.headline+'\u201d — its screenshot stays as its thumbnail unless you attach a new one below. Saving updates this entry, it doesn\u2019t add a duplicate.';
+  document.getElementById('capture').scrollIntoView({behavior:'smooth'});
+  setTimeout(function(){ $('fHeadline').focus({preventScroll:true}); }, 400);
+}
+$('cancelEditBtn').addEventListener('click', function(){
+  editingId = null;
+  $('fullSubmitBtn').textContent = 'Add to swipe file';
+  $('cancelEditBtn').style.display = 'none';
+  $('formMsg').textContent = '';
+  $('captureForm').reset();
+});
+
+/* ---------- Full capture form (secondary) ---------- */
+$('captureForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var form = e.target;
+  var shotFile = ($('fShot').files && $('fShot').files[0]) || null;
+  function finish(screenshot){
+    var vals = {
+      brand:$('fBrand').value.trim(), platform:$('fPlatform').value, market:$('fMarket').value.trim().toUpperCase(),
+      format:$('fFormat').value, engagementStyle: $('fCreator').value==='yes' ? 'UGC/Authentic' : 'Manual capture',
+      creator: $('fCreator').value==='yes',
+      headline:$('fHeadline').value.trim(), hook:$('fHook').value.trim()||'Not recorded', offer:$('fOffer').value.trim()||'Not recorded',
+      cta:$('fCta').value.trim()||'Not recorded', copy:$('fHook').value.trim()||'Not recorded',
+      reach:$('fReach').value.trim()||null,
+      libraryUrl:$('fUrl').value.trim()||'#',
+      creativeNotes:$('fNotes').value.trim()||'Captured manually — no creative notes recorded yet.',
+      startDate:$('fStart').value||null
+    };
+    if(editingId){
+      var existing = adById(editingId);
+      if(existing){
+        for(var k in vals) existing[k]=vals[k];
+        if(screenshot) existing.screenshot = screenshot;
+        if(existing.startDate) startDates[existing.id]=existing.startDate; else delete startDates[existing.id];
+        formatFilter='all'; topMode = existing.brand; topFormat='all';
+        if($('searchInput')) $('searchInput').value='';
+        refreshFilterOptions(); syncBrandSel(); renderStats(); renderPills(); renderGrid(); renderTopTabs(); renderTopAds();
+        $('formMsg').textContent = 'Details saved for \u201c'+existing.headline+'\u201d — its card in the swipe file is updated.';
+        editingId = null; $('fullSubmitBtn').textContent='Add to swipe file'; $('cancelEditBtn').style.display='none';
+        form.reset();
+        document.getElementById('swipe').scrollIntoView({behavior:'smooth'});
+        return;
+      }
+      editingId = null;
+    }
+    addedCount++;
+    var ad = { id:'added-'+Date.now()+'-'+addedCount, added:true, capturedOn: todayISO() };
+    for(var k2 in vals) ad[k2]=vals[k2];
+    ad.screenshot = screenshot||null;
+    ADS.unshift(ad);
+    if(ad.startDate) startDates[ad.id]=ad.startDate;
+    formatFilter='all';
+    topMode = ad.brand; topFormat='all';
+    if($('searchInput')) $('searchInput').value='';
+    refreshFilterOptions(); syncBrandSel(); renderStats(); renderPills(); renderGrid(); renderTopTabs(); renderTopAds();
+    $('formMsg').textContent = 'Added \u201c'+ad.headline+'\u201d to the top of the swipe file.'+(screenshot?' Its screenshot is now its thumbnail, labelled \u201cCaptured screenshot\u201d.':'')+' It lives in this tab only — download the CSV to keep the text copy.';
+    form.reset();
+    document.getElementById('swipe').scrollIntoView({behavior:'smooth'});
+  }
+  if(shotFile){
+    var reader = new FileReader();
+    reader.onload = function(){ finish(reader.result); };
+    reader.onerror = function(){ finish(null); };
+    reader.readAsDataURL(shotFile);
+  } else {
+    finish(null);
+  }
+});
+
+/* ---------- Wire up ---------- */
+['searchInput','platformSel','marketSel','sortSel','flagSel'].forEach(function(id){
+  $(id).addEventListener('input', renderGrid);
+  $(id).addEventListener('change', renderGrid);
+});
+// The swipe file's Brand dropdown and the active brand filter are the same filter:
+// picking a brand here switches Top ads to it too, and "All brands" clears the filter.
+$('brandSel').addEventListener('change', function(){
+  var v = $('brandSel').value;
+  topMode = (v==='all') ? 'all' : v;
+  if($('searchInput')) $('searchInput').value='';
+  formatFilter='all';
+  if($('platformSel')) $('platformSel').value='all';
+  if($('marketSel')) $('marketSel').value='all';
+  if($('flagSel')) $('flagSel').value='all';
+  syncBrandSel();
+  renderTopTabs(); renderTopAds(); renderPills(); renderGrid();
+});
+if($('clearBrandBtn')){
+  $('clearBrandBtn').addEventListener('click', function(){
+    topMode = 'all';
+    if($('brandSel')) $('brandSel').value = 'all';
+    renderTopTabs(); renderTopAds(); renderPills(); renderGrid();
+    document.getElementById('swipe').scrollIntoView({behavior:'smooth'});
+  });
+}
+$('captureDate').addEventListener('change', renderGrid);
+(function init(){
+  var today = new Date();
+  var iso = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  $('captureDate').value = iso;
+  if($('qLibDate')) $('qLibDate').value = iso;
+  buildLinks(false);
+  if($('qBrand') && $('brandInput')) $('qBrand').value = $('brandInput').value.trim();
+  refreshFilterOptions();
+  renderStats(); renderPills(); renderGrid(); renderTopTabs(); renderTopAds();
+})();
+</script>
+</body>
+</html>
